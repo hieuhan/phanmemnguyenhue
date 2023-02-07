@@ -1,0 +1,157 @@
+﻿@using phanmemnguyenhue.helper
+@using phanmemnguyenhue.library
+@model UserAddVM
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Thêm Tài khoản mới</h3>
+            </div>
+            <div class="wrapper_tabcontent popup-height card-body">
+                <form id="add-user-form" action="@Url.Action("Add", "User", new { Area = "Admin" })" data-ajax="true" data-ajax-begin="app.ajaxEvents.OnBegin" data-ajax-complete="app.ajaxEvents.OnComplete" data-ajax-failure="app.ajaxEvents.OnFailure" data-ajax-method="Post" data-ajax-success="app.ajaxEvents.OnSuccess" method="post" enctype="multipart/form-data" novalidate="novalidate">
+                    @Html.AntiForgeryToken()
+                    <div class="form-group mb-3 row">
+                        <label class="col-3 col-form-label">Ảnh đại diện</label>
+                        <div class="align-items-center col-9">
+                            <div class="me-3">
+                                @Html.HiddenFor(x => x.Avatar, new { @class = "hidden-file-selected" })
+                            </div>
+                            <div>
+                                @Html.TextBoxFor(m => m.PostedFile, new { @class = "form-control", type = "file", accept = "image/*" })
+                            </div>
+                        </div>
+                        @Html.ValidationMessageFor(m => m.PostedFile, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-3 col-form-label required">Tên truy cập</label>
+                        <div class="col">
+                            @Html.TextBoxFor(t => t.UserName, new { @class = "form-control", autocomplete = "new-password" })
+                            @Html.ValidationMessageFor(m => m.UserName, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-3 col-form-label required">Mật khẩu</label>
+                        <div class="col">
+                            @Html.TextBoxFor(t => t.Password, new { @class = "form-control", type = "password", autocomplete = "new-password" })
+                            <small class="form-hint">Mật khẩu bao gồm tối thiểu 6 ký tự.</small>
+                            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-3 col-form-label required">Mật khẩu xác nhận</label>
+                        <div class="col">
+                            @Html.TextBoxFor(t => t.ConfirmPassword, new { @class = "form-control", type = "password", autocomplete = "new-password" })
+                            <small class="form-hint">Mật khẩu xác nhận bao gồm tối thiểu 6 ký tự và phải khớp với Mật khẩu.</small>
+                            @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-3 col-form-label">Họ và tên</label>
+                        <div class="col">
+                            @Html.TextBoxFor(t => t.FullName, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-3 col-form-label">Email</label>
+                        <div class="col">
+                            @Html.TextBoxFor(t => t.Email, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-3 col-form-label">Điện thoại</label>
+                        <div class="col">
+                            @Html.TextBoxFor(t => t.PhoneNumber, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.PhoneNumber, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-3 col-form-label">Giới tính</label>
+                        <div class="col">
+                            @Html.DropDownListFor(m => m.GenderId, new SelectList(Model.GendersList, "GenderId", "Name", Model.GenderId).AddDefaultOption("-- Chọn giới tính --", "0"), new { id = "EditForm_GenderId", @class = "form-select select2 js" })
+                        </div>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <label class="col-3 col-form-label">Ngày sinh</label>
+                        <div class="col-3">
+                            <select name="Day" class="form-select select2 js">
+                                <option value="0">Ngày</option>
+                                @for (int i = 1; i < DateTime.DaysInMonth(Model.Year > 0 ? Model.Year : DateTime.Now.Year, Model.Month > 0 ? Model.Month : DateTime.Now.Month); i++)
+                                {
+                                    <option value="@i" @(Model.Day == i ? "selected" : string.Empty)>@i</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-3">
+                            <select name="Month" class="form-select select2 js">
+                                <option value="0">Tháng</option>
+                                @for (int i = 1; i <= 12; i++)
+                                {
+                                    <option value="@i" @(Model.Month == i ? "selected" : string.Empty)>@i</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-3">
+                            <select name="Year" class="form-select select2 js">
+                                <option value="0">Năm</option>
+                                @for (int i = DateTime.Now.Year - 14; i >= 1945; i--)
+                                {
+                                    <option value="@i" @(Model.Year == i ? "selected" : string.Empty)>@i</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-3 col-form-label">Địa chỉ</label>
+                        <div class="col">
+                            @Html.TextBoxFor(t => t.Address, new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-3 col-form-label">Trạng thái</label>
+                        <div class="col">
+                            @Html.DropDownListFor(m => m.UserStatusId, new SelectList(Model.UserStatusList, "UserStatusId", "Name", Model.UserStatusId), new { id = "EditForm_UserStatusId", @class = "form-select select2 js" })
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <div class="col-3 col-form-label">Quyền truy cập</div>
+                        <div class="col">
+                            @if (Model.RolesList.IsAny())
+                            {
+                                foreach (var item in Model.RolesList)
+                                {
+                                    <label class="form-check form-check-inline">
+                                        @if (item.Name.Equals("Basic"))
+                                        {
+                                            <input name="RoleIds" value="@item.RoleId" class="form-check-input" type="checkbox" checked />
+                                        }
+                                        else
+                                        {
+                                            <input name="RoleIds" value="@item.RoleId" class="form-check-input" type="checkbox" />
+                                        }
+                                        <span class="form-check-label">@item.Description</span>
+                                    </label>
+                                }
+                            }
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="d-flex">
+                            <a href="javascript:void(0)" title="Đóng" data-toggle-target="#_editForm" class="btn btn-link">Đóng</a>
+                            <button type="submit" class="btn btn-primary ms-auto">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-device-floppy" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M6 4h10l4 4v10a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2"></path>
+                                    <circle cx="12" cy="14" r="2"></circle>
+                                    <polyline points="14 4 14 8 8 8 8 4"></polyline>
+                                </svg>
+                                Thêm mới
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

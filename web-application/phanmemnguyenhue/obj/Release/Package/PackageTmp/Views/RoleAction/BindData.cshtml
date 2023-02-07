@@ -1,0 +1,118 @@
+﻿@using phanmemnguyenhue.helper
+@using phanmemnguyenhue.library
+@model RoleActionVM
+<div class="col">
+    <div class="page-pretitle">
+        Gán chức năng cho quyền truy cập: <b>@Model.Roles.Name</b>
+        @if (Model.Pagination.RowCount > 0)
+        {
+            <span class="text-muted mt-1">(@Model.Pagination.RowCount.ToString("#,###"))</span>
+        }
+    </div>
+</div>
+<div class="card">
+    @if (Model.ActionsList.IsAny())
+    {
+        int number = 0;
+        string[] actionLevelsList = new string[] { };
+        ActionStatus actionStatus = null;
+        <div class="table-responsive">
+            <form action="@Url.Action("MultipleAction", "RoleAction", new { Area = "Admin" })" data-ajax="true" data-ajax-begin="app.ajaxEvents.OnBegin" data-ajax-complete="app.ajaxEvents.OnComplete" data-ajax-failure="app.ajaxEvents.OnFailure" data-ajax-method="Post" data-ajax-success="app.ajaxEvents.OnSuccess" method="post" novalidate="novalidate">
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(x => x.RoleId)
+                <table class="table table-vcenter card-table">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Tên</th>
+                            <th>Mô tả</th>
+                            <th>Đường dẫn</th>
+                            <th>Trạng thái</th>
+                            <th>Hiển thị</th>
+                            <th>Người tạo</th>
+                            <th class="w-1"><input id="select-all" class="form-check-input m-0 align-middle" type="checkbox" title="Chọn tất cả"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int index = 0; index < Model.ActionsList.Count; index++)
+                        {
+                            if (!string.IsNullOrWhiteSpace(Model.ActionsList[index].TreeOrder))
+                            {
+                                actionLevelsList = Model.ActionsList[index].TreeOrder.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+                            }
+                            if (Model.ActionStatusList.IsAny())
+                            {
+                                actionStatus = ActionStatus.Static_Get(Model.ActionsList[index].StatusId, Model.ActionStatusList);
+                            }
+                            number = index + (Model.Pagination.PageIndex > 0 ? Model.Pagination.PageIndex - 1 : Model.Pagination.PageIndex) * Model.Pagination.PageSize + 1;
+                            <tr>
+                                <td class="text-muted">@number.ToString("#,###")</td>
+                                <td>@Html.Raw(string.Join("", Enumerable.Repeat("<svg xmlns=\"http://www.w3.org/2000/svg\" class=\"icon icon-tabler icon-tabler-dots\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" stroke-width=\"2\" stroke=\"currentColor\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"> <path stroke=\"none\" d=\"M0 0h24v24H0z\" fill=\"none\"></path> <circle cx=\"5\" cy=\"12\" r=\"1\"></circle> <circle cx=\"12\" cy=\"12\" r=\"1\"></circle> <circle cx=\"19\" cy=\"12\" r=\"1\"></circle> </svg>", actionLevelsList.Length > 0 ? actionLevelsList.Length - 1 : 0).ToArray()))@Model.ActionsList[index].Name</td>
+                                <td>@Model.ActionsList[index].Description</td>
+                                <td>@Model.ActionsList[index].Path</td>
+                                <td>
+                                    @if (actionStatus != null && !string.IsNullOrWhiteSpace(actionStatus.Name))
+                                    {
+                                        <span class="badge @actionStatus.ActionStatusId.ActionStatusBootstrap()">@actionStatus.Name</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col">
+                                            @if (Model.ActionsList[index].Display == 1)
+                                            {
+                                                <label class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" checked="checked" disabled="disabled" />
+                                                </label>
+                                            }
+                                            else
+                                            {
+                                                <label class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" disabled="disabled" />
+                                                </label>
+                                            }
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-muted">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="text-truncate">
+                                                <strong>@Model.ActionsList[index].CreatedBy</strong>
+                                            </div>
+                                            <div class="text-muted">@Model.ActionsList[index].CreatedAt.TimeAgo()</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <input name="ActionId" class="form-check-input m-0 align-middle checkbox-select" type="checkbox" value="@Model.ActionsList[index].ActionId" @(Model.ActionsList[index].RoleActionId > 0 ? "checked" : string.Empty) />
+                                    @if (Model.ActionsList[index].RoleActionId <= 0)
+                                    {
+                                        <input type="hidden" value="@Model.ActionsList[index].ActionId" name="IdRemove">
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </form>
+            @Html.Partial("PartialPaginationAjax", Model.Pagination)
+        </div>
+    }
+    else
+    {
+        <div class="col-12">
+            <div class="card card-md">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-10">
+                            <div class="text-muted">
+                                Không tìm thấy Chức năng phù hợp.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

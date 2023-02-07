@@ -1,0 +1,57 @@
+﻿@using phanmemnguyenhue.Services.Extensions
+@{
+    Layout = null;
+}
+@model UserLoginVM
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Đăng nhập hệ thống phanmemnguyenhue.com</title>
+    <link href="/assets/css/phanmemnguyenhue.min.css" rel="stylesheet" />
+    <link href="/assets/libs/toastr/toastr.css" rel="stylesheet" />
+    <link href="/assets/css/app.min.css" rel="stylesheet" />
+</head>
+<body class=" border-top-wide border-primary d-flex flex-column">
+    <div class="page page-center">
+        <div class="container-tight py-4">
+            <form class="card card-md" action="@Url.Action("Login", "Account")" method="post" autocomplete="off">
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-4">Đăng nhập hệ thống phần mềm Nguyễn Huệ</h2>
+                    <div class="mb-3">
+                        <label class="form-label">Tên truy cập</label>
+                        @Html.TextBoxFor(m => m.UserName, new { @class = "form-control", placeholder = "Tên truy cập", autofocus = "true", autocomplete = "off" })
+                        @Html.ValidationMessageFor(model => model.UserName, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Mật khẩu
+                        </label>
+                        @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "Mật khẩu", autocomplete = "off" })
+                        @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-check">
+                            <input name="RememberMe" type="checkbox" class="form-check-input" value="true" />
+                            <span class="form-check-label">Ghi nhớ trên thiết bị này</span>
+                        </label>
+                    </div>
+                    <div class="form-footer">
+                        <button type="submit" class="btn btn-primary w-100">Đăng nhập</button>
+                    </div>
+                    @Html.HiddenFor(x => x.ReturnUrl)
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="/assets/libs/jquery/jquery.min.js" defer></script>
+    <script src="/assets/js/phanmemnguyenhue.min.js" defer></script>
+    <script src="/assets/libs/toastr/toastr.js" defer></script>
+    <script src="/assets/js/app.js" defer></script>
+    @Html.ToastrNotifications()
+</body>
+</html>

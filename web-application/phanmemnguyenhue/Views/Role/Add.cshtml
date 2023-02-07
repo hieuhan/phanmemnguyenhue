@@ -1,0 +1,75 @@
+﻿@using phanmemnguyenhue.helper
+@using phanmemnguyenhue.library
+@model RoleEditVM
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Thêm Quyền truy cập</h3>
+            </div>
+            <div class="wrapper_tabcontent popup-height card-body">
+                <form id="add-role-form" action="@Url.Action("Add", "Role")" data-ajax="true" data-ajax-begin="app.ajaxEvents.OnBegin" data-ajax-complete="app.ajaxEvents.OnComplete" data-ajax-failure="app.ajaxEvents.OnFailure" data-ajax-method="Post" data-ajax-success="app.ajaxEvents.OnSuccess" method="post" novalidate="novalidate">
+                    @Html.AntiForgeryToken()
+                    <div class="form-group mb-3 row">
+                        <label class="col-3 col-form-label required">Tên Quyền truy cập</label>
+                        <div class="col">
+                            @Html.TextBoxFor(t => t.Name, new { @class = "form-control", autocomplete = "new-password" })
+                            @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-3 col-form-label">Mô tả</label>
+                        <div class="col">
+                            @Html.TextBoxFor(t => t.Description, new { @class = "form-control", autocomplete = "new-password" })
+                            @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-3 col-form-label">Trạng thái</label>
+                        <div class="col">
+                            @Html.DropDownListFor(m => m.StatusId, new SelectList(Model.StatusList, "StatusId", "Description", Model.StatusId), new { id = "EditForm_StatusId", @class = "form-control select2 js" })
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-3 col-form-label">Thứ tự hiển thị</label>
+                        <div class="col">
+                            @Html.TextBoxFor(t => t.DisplayOrder, new { @class = "form-control display-order" })
+                            <small class="form-hint">Nếu để trống, không nhập thì hệ thống sẽ tự xử lý.</small>
+                            @Html.ValidationMessageFor(m => m.DisplayOrder, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <div class="col-3 col-form-label"></div>
+                        <div class="col">
+                            <label class="form-check form-check-inline">
+                                @if (Model.AddAnother)
+                                {
+                                    <input name="AddAnother" value="true" class="form-check-input" type="checkbox" checked="checked" />
+                                }
+                                else
+                                {
+                                    <input name="AddAnother" value="true" class="form-check-input" type="checkbox" />
+                                }
+                                <span class="form-check-label">Thêm tiếp dữ liệu khác</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="d-flex">
+                            <a href="javascript:void(0)" title="Đóng" data-toggle-target="#_editForm" class="btn btn-link">Đóng</a>
+                            <button type="submit" class="btn btn-primary ms-auto">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-device-floppy" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M6 4h10l4 4v10a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2"></path>
+                                    <circle cx="12" cy="14" r="2"></circle>
+                                    <polyline points="14 4 14 8 8 8 8 4"></polyline>
+                                </svg>
+                                Thêm mới
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

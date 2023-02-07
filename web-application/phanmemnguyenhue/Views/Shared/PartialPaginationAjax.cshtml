@@ -1,0 +1,60 @@
+﻿@using System.Collections.Specialized
+@model PaginationVM
+<div class="card-footer d-flex align-items-center">
+    <ul class="pagination m-0 ms-auto">
+        @if (Model.PageIndex > 1)
+        {
+            <li class="page-item">
+                <a href="javascript:void(0)" data-page="@(Model.PageIndex-1)" class="page-link js">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><polyline points="15 6 9 12 15 18" /></svg>
+                </a>
+            </li>
+        }
+        @if (Model.PageStart > 1)
+        {
+            <li class="page-item"><a class="page-link js" href="javascript:void(0)" data-page="1">1</a></li>
+            if (Model.PageStart > 3)
+            {
+                <li class="page-item"><a class="page-link js" href="javascript:void(0)" data-page="2">2</a></li>
+            }
+            if (Model.PageStart > 2)
+            {
+                <li class="page-item disabled">
+                    <span class="page-link js">...</span>
+                </li>
+            }
+        }
+        @for (int index = Model.PageStart; index <= Model.PageEnd; index++)
+        {
+            if (index == Model.PageIndex)
+            {
+                <li class="page-item active"><span class="page-link js">@Model.PageIndex</span></li>
+            }
+            else
+            {
+                <li class="page-item"><a class="page-link js" href="javascript:void(0)" data-page="@index">@index</a></li>
+            }
+        }
+        @if (Model.PageEnd < Model.TotalPage)
+        {
+            if (Model.PageEnd < Model.TotalPage - 1)
+            {
+                <li class="page-item disabled">
+                    <span class="page-link js">...</span>
+                </li>
+            }
+            if (Model.PageEnd < Model.TotalPage - 2)
+            {
+                <li class="page-item"><a class="page-link js" href="javascript:void(0)" data-page="@Model.TotalPage">@Model.TotalPage</a></li>
+            }
+        }
+        @if (Model.PageIndex > 0 && Model.PageIndex < Model.TotalPage)
+        {
+            <li class="page-item">
+                <a href="javascript:void(0)" data-page="@(Model.PageIndex+1)" class="page-link js">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><polyline points="9 6 15 12 9 18" /></svg>
+                </a>
+            </li>
+        }
+    </ul>
+</div>

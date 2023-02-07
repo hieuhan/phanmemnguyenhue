@@ -1,0 +1,239 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model ProductVM
+@using phanmemnguyenhue.library
+<div class="page-body">
+    <div class="container-xl">
+        <div class="row g-2 align-items-center">
+            <div class="col-md-12 ms-auto">
+                <form action="@Url.Action("rent" , "product")" class="form-group row" method="get">
+                    <div class="col-md-2 mb-3">
+                        @Html.DropDownListFor(m => m.SiteId, new SelectList(Model.SitesList, "SiteId", "Name", Model.SiteId), new { @class = "form-select select2" })
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        @Html.DropDownListFor(m => m.LandTypeId, new SelectList(Model.LandTypesList, "LandTypeId", "Name", Model.LandTypeId).AddDefaultOption("-- Chọn Loại nhà đất --", "0"), new { @class = "form-select select2" })
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        @Html.DropDownListFor(m => m.ProvinceId, new SelectList(Model.ProvincesList, "ProvinceId", "Name", Model.ProvinceId).AddDefaultOption("-- Chọn Tỉnh / Thành --", "0"), new { @class = "form-select load-districts select2 push" })
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        @Html.DropDownListFor(m => m.DistrictId, new SelectList(Model.DistrictsList, "DistrictId", "Name", Model.DistrictId).AddDefaultOption("-- Chọn Quận / Huyện --", "0"), new { @class = "form-select load-wards select2 push" })
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        @Html.DropDownListFor(m => m.WardId, new SelectList(Model.WardsList, "WardId", "Name", Model.WardId).AddDefaultOption("-- Chọn Phường / Xã --", "0"), new { @class = "form-select load-streets select2 push" })
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        @Html.DropDownListFor(m => m.StreetId, new SelectList(Model.StreetsList, "StreetId", "Name", Model.StreetId).AddDefaultOption("-- Chọn Đường / Phố --", "0"), new { @class = "form-select select2 push" })
+                        @Html.HiddenFor(x => x.CustomerId)
+                    </div>
+                    <div class="col-md-2 mb-3" style="display:none;">
+                        @Html.DropDownListFor(m => m.ProjectId, new SelectList(Model.ProjectsList, "ProjectId", "Name", Model.ProjectId).AddDefaultOption("-- Chọn Dự án --", "0"), new { @class = "form-select select2 push" })
+                    </div>
+                    <div class="col-md-2 mb-3" style="display:none;">
+                        <select name="ProductTypeId" class="form-select select2">
+                            <option value="0" @(Model.ProductTypeId <= 0 ? "selected" : "")>-- Chọn Loại tin --</option>
+                            <option value="1" @(Model.ProductTypeId == 1 ? "selected" : "")>Tin đã xác thực</option>
+                            <option value="2" @(Model.ProductTypeId == 2 ? "selected" : "")>Tin video</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <div class="btn-list flex-nowrap">
+                            <button type="submit" class="btn btn-primary btn-search">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <circle cx="10" cy="10" r="7"></circle>
+                                    <line x1="21" y1="21" x2="15" y2="15"></line>
+                                </svg>
+                                Tìm kiếm
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="container-xl d-flex flex-column justify-content-center">
+        <div class="row row-cards">
+            <div id="table-result" class="col-12">
+                <div class="col">
+                    <div class="page-pretitle">
+                        Danh sách Tin đăng nhà đất cho thuê
+                        @if (Model.Pagination.RowCount > 0)
+                        {
+                            <span class="text-muted mt-1">(@Model.Pagination.RowCount.ToString("#,###"))</span>
+                        }
+                    </div>
+                </div>
+                <div class="card">
+                    @if (Model.ProductsList.IsAny())
+                    {
+                        int number = 0;
+                        Investors investors = null;
+                        Customers customers = null;
+                        Projects productProjects = null;
+                        <div class="table-responsive">
+                            <table class="table table-vcenter card-table">
+                                <thead>
+                                    <tr>
+                                        <th>STT</th>
+                                        <th>Thông tin mô tả</th>
+                                        <th style="width:20%">Đặc điểm bất động sản</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int index = 0; index < Model.ProductsList.Count; index++)
+                                    {
+                                        number = index + (Model.Pagination.PageIndex > 0 ? Model.Pagination.PageIndex - 1 : Model.Pagination.PageIndex) * Model.Pagination.PageSize + 1;
+                                        if (Model.CustomersList.IsAny())
+                                        {
+                                            customers = Model.CustomersList.FirstOrDefault(x => x.CustomerId == Model.ProductsList[index].CustomerId);
+                                        }
+                                        //if (Model.ProductProjectsList.IsAny())
+                                        //{
+                                        //    investors = null;
+                                        //    productProjects = Model.ProductProjectsList.FirstOrDefault(x => x.ProjectId == Model.ProductsList[index].ProjectId);
+                                        //    if (Model.InvestorsList.IsAny() && productProjects != null && productProjects.InvestorId > 0)
+                                        //    {
+                                        //        investors = Model.InvestorsList.FirstOrDefault(x => x.InvestorId == productProjects.InvestorId);
+                                        //    }
+                                        //}
+                                        <tr>
+                                            <td class="text-muted">@number.ToString("#,###")</td>
+                                            <td>
+                                                @if (customers != null)
+                                                {
+                                                    <p>
+                                                        @if (!string.IsNullOrWhiteSpace(customers.FullName))
+                                                        {
+                                                            <b>@(!string.IsNullOrWhiteSpace(customers.FullName) ? customers.FullName : "" ) - </b>
+                                                        }
+                                                        <b><a href="tel:@customers.PhoneNumber" target="_blank" title="@customers.PhoneNumber">@customers.PhoneNumber</a></b>
+                                                        @if (!string.IsNullOrWhiteSpace(customers.Email))
+                                                        {
+                                                            <b> - <a href="mailto:@customers.Email" target="_blank" title="@customers.Email">@customers.Email</a></b>
+                                                        }
+                                                    </p>
+                                                }
+                                                <div class="col-md-6 col-lg-12">
+                                                    <a href="@Model.ProductsList[index].ProductUrl" class="card-title" title="@Model.ProductsList[index].Title" target="_blank">@Model.ProductsList[index].Title</a>
+                                                    @*<div class="card-">
+                                                            <div class="row row-0">
+                                                                <div class="col-auto">
+                                                                    <div class="re__card-image">
+                                                                        <img class="rounded-start lazyload" src="data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=" data-src="@Model.ProductsList[index].ImagePath.GetImageUrl()" alt="@Model.ProductsList[index].Title" style="width:200px;max-height:140px" />
+                                                                        @if (Model.ProductsList[index].Verified > 0)
+                                                                        {
+                                                                            <div class="re__card-image-verified" title="Tin đã xác thực"></div>
+                                                                        }
+                                                                        @if (Model.ProductsList[index].IsVideo > 0)
+                                                                        {
+                                                                            <div class="re__card-image-feature" title="Tin video">
+                                                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon-tabler icon-tabler-brand-youtube" width="32" height="32" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"> <path stroke="none" d="M0 0h24v24H0z" fill="none"></path> <path d="M3 5m0 4a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4z"></path> <path d="M10 9l5 3l-5 3z"></path> </svg>
+                                                                            </div>
+                                                                        }
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col">
+                                                                    <div class="card-body padtop0">
+                                                                        <a href="@Model.ProductsList[index].ProductUrl" class="card-title" title="@Model.ProductsList[index].Title" target="_blank">@Model.ProductsList[index].Title</a>
+                                                                        <div class="re__section-body">
+                                                                            @Html.Raw(Model.ProductsList[index].ProductContent)
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>*@
+                                                </div>
+                                            </td>
+                                            <td>
+                                                @*@if (!string.IsNullOrWhiteSpace(Model.ProductsList[index].PriceDisplay))
+                                                {
+                                                    <div class="text-muted">Mức giá: <b>@Model.ProductsList[index].PriceDisplay</b></div>
+                                                }
+                                                @if (!string.IsNullOrWhiteSpace(Model.ProductsList[index].AreaDisplay))
+                                                {
+                                                    <div class="text-muted">Diện tích: <b>@Model.ProductsList[index].AreaDisplay</b></div>
+                                                }
+                                                @if (!string.IsNullOrWhiteSpace(Model.ProductsList[index].FacadeDisplay))
+                                                {
+                                                    <div class="text-muted">Mặt tiền: <b>@Model.ProductsList[index].FacadeDisplay</b></div>
+                                                }
+                                                @if (!string.IsNullOrWhiteSpace(Model.ProductsList[index].WayInDisplay))
+                                                {
+                                                    <div class="text-muted">Đường vào: <b>@Model.ProductsList[index].WayInDisplay</b></div>
+                                                }
+                                                @if (Model.ProductsList[index].Floors > 0)
+                                                {
+                                                    <div class="text-muted">Số tầng: <b>@Model.ProductsList[index].Floors</b></div>
+                                                }
+                                                @if (!string.IsNullOrWhiteSpace(Model.ProductsList[index].HouseDirection))
+                                                {
+                                                    <div class="text-muted">Hướng nhà: <b>@Model.ProductsList[index].HouseDirection</b></div>
+                                                }
+                                                @if (!string.IsNullOrWhiteSpace(Model.ProductsList[index].BalconyDirection))
+                                                {
+                                                    <div class="text-muted">Hướng ban công: <b>@Model.ProductsList[index].BalconyDirection</b></div>
+                                                }
+                                                @if (Model.ProductsList[index].Rooms > 0)
+                                                {
+                                                    <div class="text-muted">Số phòng ngủ: <b>@Model.ProductsList[index].Rooms</b></div>
+                                                }
+                                                @if (Model.ProductsList[index].Toilets > 0)
+                                                {
+                                                    <div class="text-muted">Số toilet: <b>@Model.ProductsList[index].Toilets</b></div>
+                                                }
+                                                @if (!string.IsNullOrWhiteSpace(Model.ProductsList[index].Juridical))
+                                                {
+                                                    <div class="text-muted">Pháp lý: <b>@Model.ProductsList[index].Juridical</b></div>
+                                                }
+                                                @if (!string.IsNullOrWhiteSpace(Model.ProductsList[index].Interiors))
+                                                {
+                                                    <div class="text-muted">Nội thất: <b>@Model.ProductsList[index].Interiors</b></div>
+                                                }
+                                                @if (productProjects != null && !string.IsNullOrWhiteSpace(productProjects.Name))
+                                                {
+                                                    <div class="text-muted">Dự án: <b>@productProjects.Name</b></div>
+                                                    <div class="text-muted">Trạng thái: <b>@productProjects.Status</b></div>
+                                                }
+                                                @if (investors != null && !string.IsNullOrWhiteSpace(investors.Name))
+                                                {
+                                                    <div class="text-muted">Chủ đầu tư: <b>@investors.Name</b></div>
+                                                }*@
+                                                @if (Model.ProductsList[index].PublishedAt != DateTime.MinValue)
+                                                {
+                                                    <div class="text-muted">Ngày đăng: <b>@Model.ProductsList[index].PublishedAt.DateTimeToString()</b></div>
+                                                }
+                                                @if (Model.ProductsList[index].ExpirationAt != DateTime.MinValue)
+                                                {
+                                                    <div class="text-muted">Ngày hết hạn: <b>@Model.ProductsList[index].ExpirationAt.DateTimeToString()</b></div>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                            @Html.Partial("PartialPagination", Model.Pagination)
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-12">
+                            <div class="card card-md">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col-10">
+                                            <div class="text-muted">
+                                                Không tìm thấy Tin đăng nhà đất cho thuê phù hợp.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

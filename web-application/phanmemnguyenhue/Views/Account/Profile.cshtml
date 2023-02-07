@@ -1,0 +1,121 @@
+﻿@using phanmemnguyenhue.Services.Extensions
+@model UserProfileVM
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="page-body">
+    <div class="container-xl">
+        <div class="row">
+            <div class="col-12 col-md-3 px-4"></div>
+            <div class="col-12 col-md-6">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Cập nhật hồ sơ & tài khoản</h3>
+                            </div>
+                            <div class="card-body">
+                                @using (Html.BeginForm("Profile", "Account", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <div class="form-group mb-3 row">
+                                        <label class="col-3 col-form-label">Ảnh đại diện</label>
+                                        <div class="col-md-9">
+                                            <div class="d-flex align-items-center">
+                                                <div class="me-3">
+                                                    <img id="AvatarImg" src="@Model.Avatar.GetImageUrl_Mobile()" class="rounded-circle avatar avatar-lg" alt="@Model.FullName.DefaultIfEmpty()" />
+                                                </div>
+                                                <div>
+                                                    @Html.TextBoxFor(m => m.PostedFile, new { @class = "form-control", type = "file", accept = "image/*" })
+                                                </div>
+                                            </div>
+                                            @Html.ValidationMessageFor(m => m.PostedFile, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="form-group mb-3 row">
+                                        <label class="col-3 col-form-label required">Họ và tên</label>
+                                        <div class="col">
+                                            @Html.TextBoxFor(t => t.FullName, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="form-group mb-3 row">
+                                        <label class="col-3 col-form-label">Email</label>
+                                        <div class="col">
+                                            @Html.TextBoxFor(t => t.Email, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="form-group mb-3 row">
+                                        <label class="col-3 col-form-label">Điện thoại</label>
+                                        <div class="col">
+                                            @Html.TextBoxFor(t => t.PhoneNumber, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(m => m.PhoneNumber, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="form-group mb-3 row">
+                                        <label class="col-3 col-form-label">Giới tính</label>
+                                        <div class="col">
+                                            @Html.DropDownListFor(m => m.GenderId, new SelectList(Model.GendersList, "GenderId", "Name", Model.GenderId).AddDefaultOption("-- Chọn giới tính --", "0"), new { @class = "form-select" })
+                                        </div>
+                                    </div>
+                                    <div class="row g-2 mb-3">
+                                        <label class="col-3 col-form-label">Ngày sinh</label>
+                                        <div class="col-3">
+                                            <select name="Day" class="form-select">
+                                                <option value="0">Ngày</option>
+                                                @for (int i = 1; i < DateTime.DaysInMonth(Model.Year > 0 ? Model.Year : DateTime.Now.Year, Model.Month > 0 ? Model.Month : DateTime.Now.Month); i++)
+                                                {
+                                                    <option value="@i" @(Model.Day == i ? " selected" : string.Empty)>@i</option>
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="col-3">
+                                            <select name="Month" class="form-select">
+                                                <option value="0">Tháng</option>
+                                                @for (int i = 1; i <= 12; i++)
+                                                {
+                                                    <option value="@i" @(Model.Month == i ? " selected" : string.Empty)>@i</option>
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="col-3">
+                                            <select name="Year" class="form-select">
+                                                <option value="0">Năm</option>
+                                                @for (int i = DateTime.Now.Year - 14; i >= 1945; i--)
+                                                {
+                                                    <option value="@i" @(Model.Year == i ? " selected" : string.Empty)>@i</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group mb-3 row">
+                                        <label class="col-3 col-form-label">Địa chỉ</label>
+                                        <div class="col">
+                                            @Html.TextBoxFor(t => t.Address, new { @class = "form-control" })
+                                        </div>
+                                    </div>
+                                    <div class="card-footer">
+                                        <div class="d-flex">
+                                            <a href="javascript:void(0)" title="Quay lại" data-url="@Url.Action("Index", "UserProfile")" class="btn btn-link go-back">Quay lại</a>
+                                            <button type="submit" class="btn btn-primary ms-auto">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-device-floppy" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                    <path d="M6 4h10l4 4v10a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2"></path>
+                                                    <circle cx="12" cy="14" r="2"></circle>
+                                                    <polyline points="14 4 14 8 8 8 8 4"></polyline>
+                                                </svg>
+                                                Lưu thay đổi
+                                            </button>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-3 px-4"></div>
+        </div>
+    </div>
+</div>

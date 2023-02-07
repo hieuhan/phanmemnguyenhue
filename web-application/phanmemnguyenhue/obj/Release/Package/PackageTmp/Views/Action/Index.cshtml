@@ -1,0 +1,174 @@
+﻿@using phanmemnguyenhue.helper
+@using phanmemnguyenhue.library
+@model ActionsVM
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="page-body">
+    <div class="container-xl">
+        <div class="row g-2 align-items-center">
+            <div class="col-md-12 ms-auto">
+                <form action="@Url.Action("Index" , "Action")" class="form-group row" method="get">
+                    <div class="col-md-3 mb-3">
+                        @Html.TextBoxFor(x => x.Keywords, new { @class = "form-control", placeholder = "Tên chức năng" })
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        @Html.DropDownListFor(m => m.StatusId, new SelectList(Model.ActionStatusList, "ActionStatusId", "Description", Model.StatusId).AddDefaultOption("-- Chọn trạng thái --", "0"), new { @class = "form-select" })
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <div class="btn-list flex-nowrap">
+                            <button type="submit" class="btn btn-primary btn-search">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <circle cx="10" cy="10" r="7"></circle>
+                                    <line x1="21" y1="21" x2="15" y2="15"></line>
+                                </svg>
+                                Tìm kiếm
+                            </button>
+                            <a href="javascript:void(0)" data-w="600" data-url="@Url.Action("Add", "Action")" title="Thêm chức năng" class="btn btn-teal d-sm-inline-block add-form">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                Thêm mới
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="container-xl d-flex flex-column justify-content-center">
+        <div class="row row-cards">
+            <div id="table-result" class="col-12">
+                <div class="col">
+                    <div class="page-pretitle">
+                        Danh sách chức năng
+                        @if (Model.Pagination.RowCount > 0)
+                        {
+                            <span class="text-muted mt-1">(@Model.Pagination.RowCount.ToString("#,###"))</span>
+                        }
+                    </div>
+                </div>
+                <div class="card">
+                    @if (Model.ActionsList.IsAny())
+                    {
+                        int number = 0;
+                        string[] actionLevelsList = new string[] { };
+                        ActionStatus actionStatus = null;
+                        <div class="table-responsive">
+                            <table class="table table-vcenter card-table">
+                                <thead>
+                                    <tr>
+                                        <th>STT</th>
+                                        <th>Tên</th>
+                                        <th>Mô tả</th>
+                                        <th>Đường dẫn</th>
+                                        <th>Trạng thái</th>
+                                        <th>Hiển thị</th>
+                                        <th>Người tạo</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int index = 0; index < Model.ActionsList.Count; index++)
+                                    {
+                                        if (!string.IsNullOrWhiteSpace(Model.ActionsList[index].TreeOrder))
+                                        {
+                                            actionLevelsList = Model.ActionsList[index].TreeOrder.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+                                        }
+                                        if (Model.ActionStatusList.IsAny())
+                                        {
+                                            actionStatus = ActionStatus.Static_Get(Model.ActionsList[index].StatusId, Model.ActionStatusList);
+                                        }
+                                        number = index + (Model.Pagination.PageIndex > 0 ? Model.Pagination.PageIndex - 1 : Model.Pagination.PageIndex) * Model.Pagination.PageSize + 1;
+                                        <tr>
+                                            <td class="text-muted">@number.ToString("#,###")</td>
+                                            <td>@Html.Raw(string.Join("", Enumerable.Repeat("<svg xmlns=\"http://www.w3.org/2000/svg\" class=\"icon icon-tabler icon-tabler-minus\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" stroke-width=\"2\" stroke=\"currentColor\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"> <path stroke=\"none\" d=\"M0 0h24v24H0z\" fill=\"none\"></path> <line x1=\"5\" y1=\"12\" x2=\"19\" y2=\"12\"></line> </svg>", actionLevelsList.Length > 0 ? actionLevelsList.Length - 1 : 0).ToArray()))@Model.ActionsList[index].Name</td>
+                                            <td>@Model.ActionsList[index].Description</td>
+                                            <td>@Model.ActionsList[index].Path</td>
+                                            <td>
+                                                @if (actionStatus != null && !string.IsNullOrWhiteSpace(actionStatus.Name))
+                                                {
+                                                    <span class="badge @actionStatus.ActionStatusId.ActionStatusBootstrap()">@actionStatus.Name</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        @if (Model.ActionsList[index].Display == 1)
+                                                        {
+                                                            <label class="form-check form-switch">
+                                                                <input class="form-check-input" type="checkbox" checked="checked" disabled="disabled" />
+                                                            </label>
+                                                        }
+                                                        else
+                                                        {
+                                                            <label class="form-check form-switch">
+                                                                <input class="form-check-input" type="checkbox" disabled="disabled" />
+                                                            </label>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="text-muted">
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <div class="text-truncate">
+                                                            <strong>@Model.ActionsList[index].CreatedBy</strong>
+                                                        </div>
+                                                        <div class="text-muted">@Model.ActionsList[index].CreatedAt.TimeAgo()</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="btn-list flex-nowrap">
+                                                    <a href="javascript:void(0)" class="edit-form" title="@string.Format("Cập nhật Chức năng {0}", Model.ActionsList[index].Name)" data-w="600" data-url="@Url.Action("Edit", "Action", new {  ActionId = Model.ActionsList[index].ActionId })">
+                                                        <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-edit" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                                <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1"></path>
+                                                                <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z"></path>
+                                                                <path d="M16 5l3 3"></path>
+                                                            </svg>
+                                                        </span>
+                                                    </a>
+                                                    <a href="javascript:void(0)" class="delete-item" data-url="@Url.Action("Erase", "Action", new {  ActionId = Model.ActionsList[index].ActionId })" title="@string.Format("Xóa Chức năng {0}", Model.ActionsList[index].Name)">
+                                                        <span class="nav-link-icon d-md-none d-lg-inline-block text-danger">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-trash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                                <line x1="4" y1="7" x2="20" y2="7"></line>
+                                                                <line x1="10" y1="11" x2="10" y2="17"></line>
+                                                                <line x1="14" y1="11" x2="14" y2="17"></line>
+                                                                <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"></path>
+                                                                <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"></path>
+                                                            </svg>
+                                                        </span>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                            @Html.Partial("PartialPagination", Model.Pagination)
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-12">
+                            <div class="card card-md">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col-10">
+                                            <div class="text-muted">
+                                                Không tìm thấy chức năng phù hợp.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
