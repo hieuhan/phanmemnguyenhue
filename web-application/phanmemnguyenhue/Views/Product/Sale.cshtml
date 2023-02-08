@@ -204,11 +204,11 @@
                                                 }*@
                                                 @if (Model.ProductsList[index].PublishedAt != DateTime.MinValue)
                                                 {
-                                                    <div class="text-muted">Ngày đăng: <b>@Model.ProductsList[index].PublishedAt.DateTimeToString()</b></div>
+                                                    <div class="text-muted">Ngày đăng: <b>@Model.ProductsList[index].PublishedAt.DateTimeToString("", "dd/MM/yyyy HH:mm:ss")</b></div>
                                                 }
                                                 @if (Model.ProductsList[index].ExpirationAt != DateTime.MinValue)
                                                 {
-                                                    <div class="text-muted">Ngày hết hạn: <b>@Model.ProductsList[index].ExpirationAt.DateTimeToString()</b></div>
+                                                    <div class="text-muted">Ngày hết hạn: <b>@Model.ProductsList[index].ExpirationAt.DateTimeToString("", "dd/MM/yyyy HH:mm:ss")</b></div>
                                                 }
                                             </td>
                                         </tr>

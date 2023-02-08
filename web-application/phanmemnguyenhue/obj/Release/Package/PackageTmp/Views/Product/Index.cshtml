@@ -18,9 +18,9 @@
                         @Html.DropDownListFor(m => m.LandTypeId, new SelectList(Model.LandTypesList, "LandTypeId", "Name", Model.LandTypeId).AddDefaultOption("-- Chọn Loại nhà đất --", "0"), new { @class = "form-select select2" })
                     </div>
                     <div class="col-md-2 mb-3">
-                        @Html.DropDownListFor(m => m.ProvinceId, new SelectList(Model.ProvincesList, "ProvinceId", "Name", Model.ProvinceId).AddDefaultOption("-- Chọn Tỉnh / Thành --", "0"), new { @class = "form-select load-districts select2 push" })
+                        @Html.DropDownListFor(m => m.ProvinceId, new SelectList(Model.ProvincesList, "ProvinceId", "Name", Model.ProvinceId).AddDefaultOption("-- Chọn Tỉnh / Thành --", "0"), new { @class = "form-select select2 push" })
                     </div>
-                    <div class="col-md-2 mb-3">
+                    @*<div class="col-md-2 mb-3">
                         @Html.DropDownListFor(m => m.DistrictId, new SelectList(Model.DistrictsList, "DistrictId", "Name", Model.DistrictId).AddDefaultOption("-- Chọn Quận / Huyện --", "0"), new { @class = "form-select load-wards select2 push" })
                     </div>
                     <div class="col-md-2 mb-3">
@@ -28,7 +28,6 @@
                     </div>
                     <div class="col-md-2 mb-3">
                         @Html.DropDownListFor(m => m.StreetId, new SelectList(Model.StreetsList, "StreetId", "Name", Model.StreetId).AddDefaultOption("-- Chọn Đường / Phố --", "0"), new { @class = "form-select select2 push" })
-                        @Html.HiddenFor(x => x.CustomerId)
                     </div>
                     <div class="col-md-2 mb-3" style="display:none;">
                         @Html.DropDownListFor(m => m.ProjectId, new SelectList(Model.ProjectsList, "ProjectId", "Name", Model.ProjectId).AddDefaultOption("-- Chọn Dự án --", "0"), new { @class = "form-select select2 push" })
@@ -39,8 +38,9 @@
                             <option value="1" @(Model.ProductTypeId == 1 ? "selected" : "")>Tin đã xác thực</option>
                             <option value="2" @(Model.ProductTypeId == 2 ? "selected" : "")>Tin video</option>
                         </select>
-                    </div>
+                    </div>*@
                     <div class="col-md-2 mb-3">
+                        @Html.HiddenFor(x => x.CustomerId)
                         <div class="btn-list flex-nowrap">
                             <button type="submit" class="btn btn-primary btn-search">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -178,11 +178,11 @@
                                                 }*@
                                                 @if (Model.ProductsList[index].PublishedAt != DateTime.MinValue)
                                                 {
-                                                    <div class="text-muted">Ngày đăng: <b>@Model.ProductsList[index].PublishedAt.DateTimeToString()</b></div>
+                                                    <div class="text-muted">Ngày đăng: <b>@Model.ProductsList[index].PublishedAt.DateTimeToString("", "dd/MM/yyyy HH:mm:ss")</b></div>
                                                 }
                                                 @if (Model.ProductsList[index].ExpirationAt != DateTime.MinValue)
                                                 {
-                                                    <div class="text-muted">Ngày hết hạn: <b>@Model.ProductsList[index].ExpirationAt.DateTimeToString()</b></div>
+                                                    <div class="text-muted">Ngày hết hạn: <b>@Model.ProductsList[index].ExpirationAt.DateTimeToString("", "dd/MM/yyyy HH:mm:ss")</b></div>
                                                 }
                                             </td>
                                         </tr>
