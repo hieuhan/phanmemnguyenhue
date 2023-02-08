@@ -22,27 +22,27 @@
                         @Html.DropDownListFor(m => m.LandTypeId, new SelectList(Model.LandTypesList, "LandTypeId", "Name", Model.LandTypeId).AddDefaultOption("-- Chọn Loại nhà đất --", "0"), new { @class = "form-select select2" })
                     </div>
                     <div class="col-md-2 mb-3">
-                        @Html.DropDownListFor(m => m.ProvinceId, new SelectList(Model.ProvincesList, "ProvinceId", "Name", Model.ProvinceId).AddDefaultOption("-- Chọn Tỉnh / Thành --", "0"), new { @class = "form-select select2 push" })
+                        @Html.DropDownListFor(m => m.ProvinceId, new SelectList(Model.ProvincesList, "ProvinceId", "Name", Model.ProvinceId).AddDefaultOption("-- Chọn Tỉnh / Thành --", "0"), new { @class = "form-select load-districts select2 push" })
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        @Html.DropDownListFor(m => m.DistrictId, new SelectList(Model.DistrictsList, "DistrictId", "Name", Model.DistrictId).AddDefaultOption("-- Chọn Quận / Huyện --", "0"), new { @class = "form-select select2 push" })
                     </div>
                     @*<div class="col-md-2 mb-3">
-                        @Html.DropDownListFor(m => m.DistrictId, new SelectList(Model.DistrictsList, "DistrictId", "Name", Model.DistrictId).AddDefaultOption("-- Chọn Quận / Huyện --", "0"), new { @class = "form-select load-wards select2 push" })
-                    </div>
-                    <div class="col-md-2 mb-3">
-                        @Html.DropDownListFor(m => m.WardId, new SelectList(Model.WardsList, "WardId", "Name", Model.WardId).AddDefaultOption("-- Chọn Phường / Xã --", "0"), new { @class = "form-select load-streets select2 push" })
-                    </div>
-                    <div class="col-md-2 mb-3">
-                        @Html.DropDownListFor(m => m.StreetId, new SelectList(Model.StreetsList, "StreetId", "Name", Model.StreetId).AddDefaultOption("-- Chọn Đường / Phố --", "0"), new { @class = "form-select select2 push" })
-                    </div>
-                    <div class="col-md-2 mb-3" style="display:none;">
-                        @Html.DropDownListFor(m => m.ProjectId, new SelectList(Model.ProjectsList, "ProjectId", "Name", Model.ProjectId).AddDefaultOption("-- Chọn Dự án --", "0"), new { @class = "form-select select2 push" })
-                    </div>
-                    <div class="col-md-2 mb-3" style="display:none;">
-                        <select name="ProductTypeId" class="form-select select2">
-                            <option value="0" @(Model.ProductTypeId <= 0 ? "selected" : "")>-- Chọn Loại tin --</option>
-                            <option value="1" @(Model.ProductTypeId == 1 ? "selected" : "")>Tin đã xác thực</option>
-                            <option value="2" @(Model.ProductTypeId == 2 ? "selected" : "")>Tin video</option>
-                        </select>
-                    </div>*@
+                            @Html.DropDownListFor(m => m.WardId, new SelectList(Model.WardsList, "WardId", "Name", Model.WardId).AddDefaultOption("-- Chọn Phường / Xã --", "0"), new { @class = "form-select load-streets select2 push" })
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            @Html.DropDownListFor(m => m.StreetId, new SelectList(Model.StreetsList, "StreetId", "Name", Model.StreetId).AddDefaultOption("-- Chọn Đường / Phố --", "0"), new { @class = "form-select select2 push" })
+                        </div>
+                        <div class="col-md-2 mb-3" style="display:none;">
+                            @Html.DropDownListFor(m => m.ProjectId, new SelectList(Model.ProjectsList, "ProjectId", "Name", Model.ProjectId).AddDefaultOption("-- Chọn Dự án --", "0"), new { @class = "form-select select2 push" })
+                        </div>
+                        <div class="col-md-2 mb-3" style="display:none;">
+                            <select name="ProductTypeId" class="form-select select2">
+                                <option value="0" @(Model.ProductTypeId <= 0 ? "selected" : "")>-- Chọn Loại tin --</option>
+                                <option value="1" @(Model.ProductTypeId == 1 ? "selected" : "")>Tin đã xác thực</option>
+                                <option value="2" @(Model.ProductTypeId == 2 ? "selected" : "")>Tin video</option>
+                            </select>
+                        </div>*@
                     <div class="col-md-2 mb-3">
                         <select name="DataDisplayId" class="form-select select2">
                             <option value="0" @(Model.DataDisplayId <= 0 ? "selected" : "")>-- Chọn Dữ liệu hiển thị --</option>

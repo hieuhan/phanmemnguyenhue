@@ -12,7 +12,7 @@
                         @Html.DropDownListFor(m => m.SiteId, new SelectList(Model.SitesList, "SiteId", "Name", Model.SiteId), new { @class = "form-select select2" })
                     </div>
                     <div class="col-md-2 mb-3">
-                        <select name="CategoryId" class="form-select select2">
+                        <select name="CategoryId" class="form-select select22">
                             <option value="0">-- Chọn danh mục --</option>
                             @if (Model.CategoriesList.IsAny())
                             {
@@ -24,23 +24,23 @@
                                     {
                                         actionLevelsList = item.TreeOrder.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
                                     }
-                                    <option value="@item.CategoryId" @(item.CategoryId == Model.CategoryId ? "selected" : "")>@string.Join("", Enumerable.Repeat("-", actionLevelsList.Length > 0 ? actionLevelsList.Length - 1 : 0).ToArray()) @item.Name</option>
+                                    <option value="@item.CategoryId" @(item.ParentId > 0 ? "data-p=" + item.ParentId : "") @(item.CategoryId == Model.CategoryId ? "selected" : "")>@string.Join("", Enumerable.Repeat("-", actionLevelsList.Length > 0 ? actionLevelsList.Length - 1 : 0).ToArray()) @item.Name </option>
                                 }
                             }
                         </select>
                     </div>
                     <div class="col-md-2 mb-3">
-                        @Html.DropDownListFor(m => m.ProvinceId, new SelectList(Model.ProvincesList, "ProvinceId", "Name", Model.ProvinceId).AddDefaultOption("-- Chọn Tỉnh / Thành --", "0"), new { @class = "form-select select2 push" })
+                        @Html.DropDownListFor(m => m.ProvinceId, new SelectList(Model.ProvincesList, "ProvinceId", "Name", Model.ProvinceId).AddDefaultOption("-- Chọn Tỉnh / Thành --", "0"), new { @class = "form-select load-districts select2 push" })
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        @Html.DropDownListFor(m => m.DistrictId, new SelectList(Model.DistrictsList, "DistrictId", "Name", Model.DistrictId).AddDefaultOption("-- Chọn Quận / Huyện --", "0"), new { @class = "form-select select2 push" })
                     </div>
                     @*<div class="col-md-2 mb-3">
-                        @Html.DropDownListFor(m => m.DistrictId, new SelectList(Model.DistrictsList, "DistrictId", "Name", Model.DistrictId).AddDefaultOption("-- Chọn Quận / Huyện --", "0"), new { @class = "form-select load-wards select2 push" })
-                    </div>
-                    <div class="col-md-2 mb-3">
-                        @Html.DropDownListFor(m => m.WardId, new SelectList(Model.WardsList, "WardId", "Name", Model.WardId).AddDefaultOption("-- Chọn Phường / Xã --", "0"), new { @class = "form-select load-streets select2 push" })
-                    </div>
-                    <div class="col-md-2 mb-3">
-                        @Html.DropDownListFor(m => m.StreetId, new SelectList(Model.StreetsList, "StreetId", "Name", Model.StreetId).AddDefaultOption("-- Chọn Đường / Phố --", "0"), new { @class = "form-select select2 push" })
-                    </div>*@
+                            @Html.DropDownListFor(m => m.WardId, new SelectList(Model.WardsList, "WardId", "Name", Model.WardId).AddDefaultOption("-- Chọn Phường / Xã --", "0"), new { @class = "form-select load-streets select2 push" })
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            @Html.DropDownListFor(m => m.StreetId, new SelectList(Model.StreetsList, "StreetId", "Name", Model.StreetId).AddDefaultOption("-- Chọn Đường / Phố --", "0"), new { @class = "form-select select2 push" })
+                        </div>*@
                     <div class="col-md-2 mb-3">
                         @Html.HiddenFor(x => x.CustomerId)
                         <div class="btn-list flex-nowrap">

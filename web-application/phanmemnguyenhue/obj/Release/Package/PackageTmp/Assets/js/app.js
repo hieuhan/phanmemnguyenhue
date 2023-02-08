@@ -1016,6 +1016,15 @@
             }
         })
     },
+    formatState: function (state) {
+        if (!state.id) {
+            return state.text;
+        }
+        var $state = $(
+            !$(state.element).data('p') && $(state.element).siblings('option[data-p="' + state.id + '"]').length > 0 ? '<strong>' + state.text + '</strong>' : '<span>' + state.text + '</span>'
+        );
+        return $state;
+    },
     showMessage: function (options) {
         var defaults = {
             id: '_message',
@@ -1217,6 +1226,10 @@
         if (jQuery.fn.select2) {
             $('select.select2').select2({
                 width: '100%'
+            });
+            $('select.select22').select2({
+                width: '100%',
+                templateResult: app.formatState
             });
         }
     },
