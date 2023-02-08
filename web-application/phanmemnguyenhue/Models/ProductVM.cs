@@ -16,7 +16,9 @@ namespace phanmemnguyenhue.Models
         public int ActionTypeId { get; set; }
         public int LandTypeId { get; set; }
         public int ProductTypeId { get; set; }
+        public int CategoryId { get; set; }
         public List<Sites> SitesList { get; set; }
+        public List<Categories> CategoriesList { get; set; }
         public List<ActionTypes> ActionTypesList { get; set; }
         public List<LandTypes> LandTypesList { get; set; }
         public List<Provinces> ProvincesList { get; set; }

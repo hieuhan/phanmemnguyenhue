@@ -50,6 +50,8 @@ namespace phanmemnguyenhue.library
         public string Juridical { get; set; }
         public string Interiors { get; set; }
         public int ProductTypeId { get; set; }
+        public int CategoryId { get; set; }
+        public int ParentCategoryId { get; set; }
         public int ActionTypeId { get; set; }
         public int LandTypeId { get; set; }
         public double Latitude { get; set; }
@@ -137,6 +139,7 @@ namespace phanmemnguyenhue.library
                     param.Add("@Verified", this.Verified, DbType.Byte);
                     param.Add("@IsVideo", this.IsVideo, DbType.Byte);
                     param.Add("@ProductTypeId", this.ProductTypeId, DbType.Int32);
+                    param.Add("@CategoryId", this.CategoryId, DbType.Int32);
                     param.Add("@ActionTypeId", this.ActionTypeId, DbType.Int32);
                     param.Add("@LandTypeId", this.LandTypeId, DbType.Int32);
                     param.Add("@SearchByDateType", searchByDateType, DbType.Byte);

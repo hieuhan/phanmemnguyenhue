@@ -16,9 +16,10 @@ namespace phanmemnguyenhue.Controllers
     {
         // GET: Admin/Product
         [HttpGet]
-        public async Task<ActionResult> Index(int siteId = 1000, int customerId = 0, int actionTypeId = 0, int landTypeId = 0, int provinceId = 0, int districtId = 0, int wardId = 0, int streetId = 0, int projectId = 0, int productTypeId = 0, int page = 0, int pageSize = 200)
+        public async Task<ActionResult> Index(int siteId = 1000, int customerId = 0, int categoryId = 0, int actionTypeId = 0, int landTypeId = 0, int provinceId = 0, int districtId = 0, int wardId = 0, int streetId = 0, int projectId = 0, int productTypeId = 0, int page = 0, int pageSize = 200)
         {
             byte verified = 0, isVideo = 0;
+            string viewPath = "~/Views/Product/Index.cshtml";
 
             MyPrincipal myPrincipal = AppExtensions.GetCurrentUser();
 
@@ -36,6 +37,7 @@ namespace phanmemnguyenhue.Controllers
                 ActBy = myPrincipal.UserName,
                 SiteId = siteId,
                 CustomerId = customerId,
+                CategoryId = categoryId,
                 ActionTypeId = actionTypeId,
                 LandTypeId = landTypeId,
                 ProvinceId = provinceId,
@@ -48,6 +50,7 @@ namespace phanmemnguyenhue.Controllers
             };
 
             Task<List<Sites>> sitesTask = Sites.Static_GetList();
+            Task<List<Categories>> categoriesTask = Categories.Static_GetList(siteId);
             Task<List<ActionTypes>> actionTypesTask = ActionTypes.Static_GetList(siteId);
             Task<List<LandTypes>> landTypesTask = LandTypes.Static_GetList(siteId);
             Task<List<Provinces>> provincesTask = Provinces.Static_GetList(siteId);
@@ -71,11 +74,11 @@ namespace phanmemnguyenhue.Controllers
                     {
                         streetsTask = Streets.Static_GetListByWard(siteId, wardId);
 
-                        await Task.WhenAll(sitesTask, actionTypesTask, landTypesTask, provincesTask, districtsTask, wardsTask, streetsTask, projectsTask, productGetPageTask);
+                        await Task.WhenAll(sitesTask, categoriesTask, actionTypesTask, landTypesTask, provincesTask, districtsTask, wardsTask, streetsTask, projectsTask, productGetPageTask);
                     }
                     else
                     {
-                        await Task.WhenAll(sitesTask, actionTypesTask, landTypesTask, provincesTask, districtsTask, wardsTask, projectsTask, productGetPageTask);
+                        await Task.WhenAll(sitesTask, categoriesTask, actionTypesTask, landTypesTask, provincesTask, districtsTask, wardsTask, projectsTask, productGetPageTask);
                     }
                 }
                 else
@@ -84,20 +87,22 @@ namespace phanmemnguyenhue.Controllers
 
                     streetsTask = Streets.Static_GetListByProvince(siteId, provinceId);
 
-                    await Task.WhenAll(sitesTask, actionTypesTask, landTypesTask, provincesTask, streetsTask, projectsTask, productGetPageTask);
+                    await Task.WhenAll(sitesTask, categoriesTask, actionTypesTask, landTypesTask, provincesTask, streetsTask, projectsTask, productGetPageTask);
                 }
             }
             else
             {
-                await Task.WhenAll(sitesTask, actionTypesTask, landTypesTask, provincesTask, productGetPageTask);
+                await Task.WhenAll(sitesTask, categoriesTask, actionTypesTask, landTypesTask, provincesTask, productGetPageTask);
             }
 
             ProductVM model = new ProductVM
             {
                 SiteId = siteId,
                 CustomerId = customerId,
+                CategoryId = categoryId,
                 ProductTypeId = productTypeId,
                 SitesList = sitesTask != null && sitesTask.Result.IsAny() ? sitesTask.Result : new List<Sites>(),
+                CategoriesList = categoriesTask != null && categoriesTask.Result.IsAny() ? categoriesTask.Result : new List<Categories>(),
                 ActionTypesList = actionTypesTask != null && actionTypesTask.Result.IsAny() ? actionTypesTask.Result : new List<ActionTypes>(),
                 LandTypesList = landTypesTask != null && landTypesTask.Result.IsAny() ? landTypesTask.Result : new List<LandTypes>(),
                 ProvincesList = provincesTask != null && provincesTask.Result.IsAny() ? provincesTask.Result : new List<Provinces>(),
@@ -128,7 +133,17 @@ namespace phanmemnguyenhue.Controllers
                 //}
             }
 
-            return View(model);
+            if(model.SitesList.IsAny() && siteId > 0)
+            {
+                var site = model.SitesList.FirstOrDefault(x => x.SiteId == siteId);
+
+                if(site != null && !string.IsNullOrWhiteSpace(site.ProductViewPath))
+                {
+                    viewPath = site.ProductViewPath;
+                }
+            }
+
+            return View(viewPath, model);
         }
 
         [HttpGet]

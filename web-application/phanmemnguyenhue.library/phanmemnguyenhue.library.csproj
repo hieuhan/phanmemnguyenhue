@@ -47,6 +47,7 @@
     <Compile Include="Actions.cs" />
     <Compile Include="ActionStatus.cs" />
     <Compile Include="ActionTypes.cs" />
+    <Compile Include="Categories.cs" />
     <Compile Include="Customers.cs" />
     <Compile Include="Districts.cs" />
     <Compile Include="Genders.cs" />

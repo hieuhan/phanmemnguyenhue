@@ -113,14 +113,14 @@ const scraperObject = {
                             {
                                 const nextDataJson = JSON.parse(nextData.text());
 
-                                try 
-                                {
-                                    fs.writeFileSync('nextData.txt', nextData.text());
-                                } 
-                                catch (err) 
-                                {
-                                    console.error(err);
-                                }
+                                // try 
+                                // {
+                                //     fs.writeFileSync('nextData.txt', nextData.text());
+                                // } 
+                                // catch (err) 
+                                // {
+                                //     console.error(err);
+                                // }
 
                                 if(nextDataJson)
                                 {
@@ -506,8 +506,8 @@ const scraperObject = {
                 {
                     for(key in categories)
                     {
-                        if(key == 'mua-ban-xe')
-                        {
+                        //if(key == 'mua-ban-xe')
+                        //{
                             const item = categories[key];
 
                             if(item.subCategories.entities)
@@ -525,7 +525,7 @@ const scraperObject = {
                                     }
                                 }
                             }
-                        }
+                        //}
                     }
                 } 
                 catch (error) 

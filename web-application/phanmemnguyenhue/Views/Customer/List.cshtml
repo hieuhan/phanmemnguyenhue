@@ -16,10 +16,22 @@
                         @Html.TextBoxFor(x => x.Keywords, new { @class = "form-control", placeholder = "Tìm theo Họ tên, email, số điện thoại" })
                     </div>
                     <div class="col-md-2 mb-3">
-                        @Html.DropDownListFor(m => m.ActionTypeId, new SelectList(Model.ActionTypesList, "ActionTypeId", "Name", Model.ActionTypeId).AddDefaultOption("-- Chọn hành động --", "0"), new { @class = "form-select select2" })
-                    </div>
-                    <div class="col-md-2 mb-3">
-                        @Html.DropDownListFor(m => m.LandTypeId, new SelectList(Model.LandTypesList, "LandTypeId", "Name", Model.LandTypeId).AddDefaultOption("-- Chọn Loại nhà đất --", "0"), new { @class = "form-select select2" })
+                        <select name="CategoryId" class="form-select select2">
+                            <option value="0">-- Chọn danh mục --</option>
+                            @if (Model.CategoriesList.IsAny())
+                            {
+                                string[] actionLevelsList = new string[] { };
+
+                                foreach (var item in Model.CategoriesList)
+                                {
+                                    if (!string.IsNullOrWhiteSpace(item.TreeOrder))
+                                    {
+                                        actionLevelsList = item.TreeOrder.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+                                    }
+                                    <option value="@item.CategoryId" @(item.CategoryId == Model.CategoryId ? "selected" : "")>@string.Join("", Enumerable.Repeat("-", actionLevelsList.Length > 0 ? actionLevelsList.Length - 1 : 0).ToArray()) @item.Name</option>
+                                }
+                            }
+                        </select>
                     </div>
                     <div class="col-md-2 mb-3">
                         @Html.DropDownListFor(m => m.ProvinceId, new SelectList(Model.ProvincesList, "ProvinceId", "Name", Model.ProvinceId).AddDefaultOption("-- Chọn Tỉnh / Thành --", "0"), new { @class = "form-select select2 push" })
@@ -32,16 +44,6 @@
                     </div>
                     <div class="col-md-2 mb-3">
                         @Html.DropDownListFor(m => m.StreetId, new SelectList(Model.StreetsList, "StreetId", "Name", Model.StreetId).AddDefaultOption("-- Chọn Đường / Phố --", "0"), new { @class = "form-select select2 push" })
-                    </div>
-                    <div class="col-md-2 mb-3" style="display:none;">
-                        @Html.DropDownListFor(m => m.ProjectId, new SelectList(Model.ProjectsList, "ProjectId", "Name", Model.ProjectId).AddDefaultOption("-- Chọn Dự án --", "0"), new { @class = "form-select select2 push" })
-                    </div>
-                    <div class="col-md-2 mb-3" style="display:none;">
-                        <select name="ProductTypeId" class="form-select select2">
-                            <option value="0" @(Model.ProductTypeId <= 0 ? "selected" : "")>-- Chọn Loại tin --</option>
-                            <option value="1" @(Model.ProductTypeId == 1 ? "selected" : "")>Tin đã xác thực</option>
-                            <option value="2" @(Model.ProductTypeId == 2 ? "selected" : "")>Tin video</option>
-                        </select>
                     </div>*@
                     <div class="col-md-2 mb-3">
                         <select name="DataDisplayId" class="form-select select2">
@@ -144,7 +146,7 @@
                                                         </div>
                                                     }
                                                     <div class="flex-fill">
-                                                        <div class="font-weight-medium"><a href="@Url.Action("index" , "product", new { SiteId = Model.CustomersList[index].SiteId, CustomerId = Model.CustomersList[index].CustomerId } ).BuildQueryStringUrl(new NameValueCollection { { "ActionTypeId", Model.ActionTypeId > 0 ? Model.ActionTypeId.ToString() : "" }, { "LandTypeId", Model.LandTypeId > 0 ? Model.LandTypeId.ToString() : "" }, { "ProvinceId", Model.ProvinceId > 0 ? Model.ProvinceId.ToString() : "" } })" title="Xem bài đăng" target="_blank">@Model.CustomersList[index].FullName.DefaultIfEmpty()</a></div>
+                                                        <div class="font-weight-medium"><a href="@Url.Action("index" , "product", new { SiteId = Model.CustomersList[index].SiteId, CustomerId = Model.CustomersList[index].CustomerId } ).BuildQueryStringUrl(new NameValueCollection { { "CategoryId", Model.CategoryId > 0 ? Model.CategoryId.ToString() : "" }, { "ProvinceId", Model.ProvinceId > 0 ? Model.ProvinceId.ToString() : "" } })" title="Xem bài đăng" target="_blank">@Model.CustomersList[index].FullName.DefaultIfEmpty()</a></div>
                                                     </div>
                                                 </div>
                                             </td>
@@ -191,3 +193,4 @@
         </div>
     </div>
 </div>
+

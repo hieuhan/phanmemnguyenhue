@@ -59,12 +59,12 @@ namespace phanmemnguyenhue.library
             Customers retVal = new Customers();
             byte verified = 0, isVideo = 0, showEmail = 0, searchByDateType = 0;
             string keywords = string.Empty;
-            int orderByClauseId = 0, pageIndex = 0, pageSize = 1;
+            int categoryId = 0, orderByClauseId = 0, pageIndex = 0, pageSize = 1;
             DateTime dateFrom = DateTime.MinValue, dateTo = DateTime.MinValue;
             Tuple<List<Customers>, int> tuple;
             try
             {
-                tuple = await GetPage(keywords, dateFrom, dateTo, landTypeId, actionTypeId, provinceId, districtId, wardId, streetId, projectId, verified, isVideo, showEmail, searchByDateType, orderByClauseId, pageIndex, pageSize);
+                tuple = await GetPage(keywords, dateFrom, dateTo, categoryId, landTypeId, actionTypeId, provinceId, districtId, wardId, streetId, projectId, verified, isVideo, showEmail, searchByDateType, orderByClauseId, pageIndex, pageSize);
                 if (tuple.Item1 != null && tuple.Item1.Count > 0) retVal = tuple.Item1[0];
             }
             catch (Exception ex)
@@ -74,7 +74,7 @@ namespace phanmemnguyenhue.library
             return retVal;
         }
 
-        public async Task<Tuple<List<Customers>, int>> GetPage(string keywords, DateTime dateFrom, DateTime dateTo, int landTypeId, int actionTypeId, int provinceId, int districtId, int wardId, int streetId, int projectId, byte verified, byte isVideo, byte showEmail, byte searchByDateType, int orderByClauseId, int pageIndex, int pageSize)
+        public async Task<Tuple<List<Customers>, int>> GetPage(string keywords, DateTime dateFrom, DateTime dateTo, int categoryId, int landTypeId, int actionTypeId, int provinceId, int districtId, int wardId, int streetId, int projectId, byte verified, byte isVideo, byte showEmail, byte searchByDateType, int orderByClauseId, int pageIndex, int pageSize)
         {
             int rowCount = 0;
             List<Customers> customersList = new List<Customers>();
@@ -100,6 +100,7 @@ namespace phanmemnguyenhue.library
                         param.Add("@PhoneNumber", this.PhoneNumber, DbType.String);
                     if (!string.IsNullOrEmpty(keywords))
                         param.Add("@Keywords", keywords, DbType.String);
+                    param.Add("@CategoryId", categoryId, DbType.Int32);
                     param.Add("@LandTypeId", landTypeId, DbType.Int32);
                     param.Add("@ActionTypeId", actionTypeId, DbType.Int32);
                     param.Add("@ProvinceId", provinceId, DbType.Int32);

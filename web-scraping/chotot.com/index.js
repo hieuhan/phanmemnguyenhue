@@ -1,5 +1,6 @@
 const browserObject = require('../browser');
 const scraperObject = require('./scraper');
+const path = require('path');
 const fs = require('fs');
 
 (async () => {
@@ -9,7 +10,7 @@ const fs = require('fs');
     if(browser != null)
     {
         let categories = [];
-        let rawdata = fs.readFileSync('./categories.txt');
+        let rawdata = fs.readFileSync(path.resolve(__dirname, '../categories.txt'));
         categories = JSON.parse(rawdata);
 
         await Promise.all([

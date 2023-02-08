@@ -747,6 +747,8 @@
     <Content Include="Views\Customer\Index.cshtml" />
     <Content Include="Views\Error\NotFound.cshtml" />
     <Content Include="Views\Error\AccessDenied.cshtml" />
+    <Content Include="Views\Article\Index.cshtml" />
+    <Content Include="Views\Customer\List.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Assets\libs\tinymce\tinymce.d.ts" />

@@ -4,21 +4,22 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Data;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 
 namespace phanmemnguyenhue.library
 {
-    public class Sites
+    public class Categories
     {
         #region Properties
         public string ActBy { get; set; }
-        public int ActionTypeId { get; set; }
         public int SiteId { get; set; }
+        public int ParentId { get; set; }
+        public int CategoryId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public string CustomerViewPath { get; set; }
-        public string ProductViewPath { get; set; }
+        public string TreeOrder { get; set; }
         public int? DisplayOrder { get; set; }
         public DateTime CreatedAt { get; set; }
 
@@ -28,17 +29,17 @@ namespace phanmemnguyenhue.library
 
         #region Constructors
 
-        public Sites()
+        public Categories()
         {
             _connectionString = ConstantHelper.CommonConstr;
         }
 
-        public Sites(string connection)
+        public Categories(string connection)
         {
             _connectionString = connection;
         }
 
-        ~Sites()
+        ~Categories()
         {
 
         }
@@ -52,9 +53,9 @@ namespace phanmemnguyenhue.library
 
         #region Methods
 
-        public async Task<List<Sites>> GetList()
+        public async Task<List<Categories>> GetList(int siteId)
         {
-            List<Sites> resultVar = new List<Sites>();
+            List<Categories> resultVar = new List<Categories>();
 
             try
             {
@@ -63,11 +64,12 @@ namespace phanmemnguyenhue.library
                     if (connection.State == ConnectionState.Closed)
                         connection.Open();
 
-                    resultVar = await connection.QueryAsync<Sites>("SELECT * FROM [dbo].[Sites] ORDER BY [DisplayOrder],[Name]") as List<Sites>;
+                    resultVar = await connection.QueryAsync<Categories>(string.Format("SELECT * FROM [dbo].[Categories] WHERE [SiteId]={0} ORDER BY [TreeOrder]", siteId)) as List<Categories>;
                 }
             }
             catch (Exception ex)
             {
+                resultVar = null;
                 throw ex;
             }
 
@@ -78,15 +80,15 @@ namespace phanmemnguyenhue.library
 
         #region Static Methods
 
-        public static async Task<List<Sites>> Static_GetList()
+        public static async Task<List<Categories>> Static_GetList(int siteId)
         {
-            Sites Sites = new Sites();
-            return await Sites.GetList();
+            Categories Categories = new Categories();
+            return await Categories.GetList(siteId);
         }
 
-        public static Sites Static_Get(int siteId, List<Sites> list)
+        public static Categories Static_Get(int siteId, List<Categories> list)
         {
-            Sites resultVar = null;
+            Categories resultVar = null;
 
             if (siteId > 0 && list != null && list.Count > 0)
             {

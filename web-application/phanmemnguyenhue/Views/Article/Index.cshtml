@@ -12,10 +12,22 @@
                         @Html.DropDownListFor(m => m.SiteId, new SelectList(Model.SitesList, "SiteId", "Name", Model.SiteId), new { @class = "form-select select2" })
                     </div>
                     <div class="col-md-2 mb-3">
-                        @Html.DropDownListFor(m => m.ActionTypeId, new SelectList(Model.ActionTypesList, "ActionTypeId", "Name", Model.ActionTypeId).AddDefaultOption("-- Chọn hành động --", "0"), new { @class = "form-select select2" })
-                    </div>
-                    <div class="col-md-2 mb-3">
-                        @Html.DropDownListFor(m => m.LandTypeId, new SelectList(Model.LandTypesList, "LandTypeId", "Name", Model.LandTypeId).AddDefaultOption("-- Chọn Loại nhà đất --", "0"), new { @class = "form-select select2" })
+                        <select name="CategoryId" class="form-select select2">
+                            <option value="0">-- Chọn danh mục --</option>
+                            @if (Model.CategoriesList.IsAny())
+                            {
+                                string[] actionLevelsList = new string[] { };
+
+                                foreach (var item in Model.CategoriesList)
+                                {
+                                    if (!string.IsNullOrWhiteSpace(item.TreeOrder))
+                                    {
+                                        actionLevelsList = item.TreeOrder.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+                                    }
+                                    <option value="@item.CategoryId" @(item.CategoryId == Model.CategoryId ? "selected" : "")>@string.Join("", Enumerable.Repeat("-", actionLevelsList.Length > 0 ? actionLevelsList.Length - 1 : 0).ToArray()) @item.Name</option>
+                                }
+                            }
+                        </select>
                     </div>
                     <div class="col-md-2 mb-3">
                         @Html.DropDownListFor(m => m.ProvinceId, new SelectList(Model.ProvincesList, "ProvinceId", "Name", Model.ProvinceId).AddDefaultOption("-- Chọn Tỉnh / Thành --", "0"), new { @class = "form-select select2 push" })
@@ -28,16 +40,6 @@
                     </div>
                     <div class="col-md-2 mb-3">
                         @Html.DropDownListFor(m => m.StreetId, new SelectList(Model.StreetsList, "StreetId", "Name", Model.StreetId).AddDefaultOption("-- Chọn Đường / Phố --", "0"), new { @class = "form-select select2 push" })
-                    </div>
-                    <div class="col-md-2 mb-3" style="display:none;">
-                        @Html.DropDownListFor(m => m.ProjectId, new SelectList(Model.ProjectsList, "ProjectId", "Name", Model.ProjectId).AddDefaultOption("-- Chọn Dự án --", "0"), new { @class = "form-select select2 push" })
-                    </div>
-                    <div class="col-md-2 mb-3" style="display:none;">
-                        <select name="ProductTypeId" class="form-select select2">
-                            <option value="0" @(Model.ProductTypeId <= 0 ? "selected" : "")>-- Chọn Loại tin --</option>
-                            <option value="1" @(Model.ProductTypeId == 1 ? "selected" : "")>Tin đã xác thực</option>
-                            <option value="2" @(Model.ProductTypeId == 2 ? "selected" : "")>Tin video</option>
-                        </select>
                     </div>*@
                     <div class="col-md-2 mb-3">
                         @Html.HiddenFor(x => x.CustomerId)
@@ -72,9 +74,7 @@
                     @if (Model.ProductsList.IsAny())
                     {
                         int number = 0;
-                        Investors investors = null;
                         Customers customers = null;
-                        Projects productProjects = null;
                         <div class="table-responsive">
                             <table class="table table-vcenter card-table">
                                 <thead>
@@ -92,15 +92,6 @@
                                         {
                                             customers = Model.CustomersList.FirstOrDefault(x => x.CustomerId == Model.ProductsList[index].CustomerId);
                                         }
-                                        //if (Model.ProductProjectsList.IsAny())
-                                        //{
-                                        //    investors = null;
-                                        //    productProjects = Model.ProductProjectsList.FirstOrDefault(x => x.ProjectId == Model.ProductsList[index].ProjectId);
-                                        //    if (Model.InvestorsList.IsAny() && productProjects != null && productProjects.InvestorId > 0)
-                                        //    {
-                                        //        investors = Model.InvestorsList.FirstOrDefault(x => x.InvestorId == productProjects.InvestorId);
-                                        //    }
-                                        //}
                                         <tr>
                                             <td class="text-muted">@number.ToString("#,###")</td>
                                             <td>
@@ -123,66 +114,13 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                @*@if (!string.IsNullOrWhiteSpace(Model.ProductsList[index].PriceDisplay))
-                                                {
-                                                    <div class="text-muted">Mức giá: <b>@Model.ProductsList[index].PriceDisplay</b></div>
-                                                }
-                                                @if (!string.IsNullOrWhiteSpace(Model.ProductsList[index].AreaDisplay))
-                                                {
-                                                    <div class="text-muted">Diện tích: <b>@Model.ProductsList[index].AreaDisplay</b></div>
-                                                }
-                                                @if (!string.IsNullOrWhiteSpace(Model.ProductsList[index].FacadeDisplay))
-                                                {
-                                                    <div class="text-muted">Mặt tiền: <b>@Model.ProductsList[index].FacadeDisplay</b></div>
-                                                }
-                                                @if (!string.IsNullOrWhiteSpace(Model.ProductsList[index].WayInDisplay))
-                                                {
-                                                    <div class="text-muted">Đường vào: <b>@Model.ProductsList[index].WayInDisplay</b></div>
-                                                }
-                                                @if (Model.ProductsList[index].Floors > 0)
-                                                {
-                                                    <div class="text-muted">Số tầng: <b>@Model.ProductsList[index].Floors</b></div>
-                                                }
-                                                @if (!string.IsNullOrWhiteSpace(Model.ProductsList[index].HouseDirection))
-                                                {
-                                                    <div class="text-muted">Hướng nhà: <b>@Model.ProductsList[index].HouseDirection</b></div>
-                                                }
-                                                @if (!string.IsNullOrWhiteSpace(Model.ProductsList[index].BalconyDirection))
-                                                {
-                                                    <div class="text-muted">Hướng ban công: <b>@Model.ProductsList[index].BalconyDirection</b></div>
-                                                }
-                                                @if (Model.ProductsList[index].Rooms > 0)
-                                                {
-                                                    <div class="text-muted">Số phòng ngủ: <b>@Model.ProductsList[index].Rooms</b></div>
-                                                }
-                                                @if (Model.ProductsList[index].Toilets > 0)
-                                                {
-                                                    <div class="text-muted">Số toilet: <b>@Model.ProductsList[index].Toilets</b></div>
-                                                }
-                                                @if (!string.IsNullOrWhiteSpace(Model.ProductsList[index].Juridical))
-                                                {
-                                                    <div class="text-muted">Pháp lý: <b>@Model.ProductsList[index].Juridical</b></div>
-                                                }
-                                                @if (!string.IsNullOrWhiteSpace(Model.ProductsList[index].Interiors))
-                                                {
-                                                    <div class="text-muted">Nội thất: <b>@Model.ProductsList[index].Interiors</b></div>
-                                                }
-                                                @if (productProjects != null && !string.IsNullOrWhiteSpace(productProjects.Name))
-                                                {
-                                                    <div class="text-muted">Dự án: <b>@productProjects.Name</b></div>
-                                                    <div class="text-muted">Trạng thái: <b>@productProjects.Status</b></div>
-                                                }
-                                                @if (investors != null && !string.IsNullOrWhiteSpace(investors.Name))
-                                                {
-                                                    <div class="text-muted">Chủ đầu tư: <b>@investors.Name</b></div>
-                                                }*@
                                                 @if (Model.ProductsList[index].PublishedAt != DateTime.MinValue)
                                                 {
-                                                    <div class="text-muted">Ngày đăng: <b>@Model.ProductsList[index].PublishedAt.DateTimeToString()</b></div>
+                                                    <div class="text-muted">Ngày đăng: <b>@Model.ProductsList[index].PublishedAt.DateTimeToString("", "dd/MM/yyyy HH:mm:ss")</b></div>
                                                 }
                                                 @if (Model.ProductsList[index].ExpirationAt != DateTime.MinValue)
                                                 {
-                                                    <div class="text-muted">Ngày hết hạn: <b>@Model.ProductsList[index].ExpirationAt.DateTimeToString()</b></div>
+                                                    <div class="text-muted">Ngày hết hạn: <b>@Model.ProductsList[index].ExpirationAt.DateTimeToString("", "dd/MM/yyyy HH:mm:ss")</b></div>
                                                 }
                                             </td>
                                         </tr>

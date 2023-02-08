@@ -84,13 +84,13 @@ namespace phanmemnguyenhue.library
             return await ActionTypes.GetList(siteId);
         }
 
-        public static ActionTypes Static_Get(byte ActionTypeId, List<ActionTypes> list)
+        public static ActionTypes Static_Get(int actionTypeId, List<ActionTypes> list)
         {
             ActionTypes resultVar = null;
 
-            if (ActionTypeId > 0 && list != null && list.Count > 0)
+            if (actionTypeId > 0 && list != null && list.Count > 0)
             {
-                resultVar = list.FirstOrDefault(i => i.ActionTypeId == ActionTypeId);
+                resultVar = list.FirstOrDefault(i => i.ActionTypeId == actionTypeId);
             }
 
             return resultVar;
