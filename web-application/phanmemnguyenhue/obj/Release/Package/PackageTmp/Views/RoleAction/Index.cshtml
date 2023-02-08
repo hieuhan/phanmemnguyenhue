@@ -11,7 +11,7 @@
                         @Html.TextBoxFor(x => x.Keywords, new { @class = "form-control", placeholder = "Tên chức năng" })
                     </div>
                     <div class="col-md-2 mb-3">
-                        @Html.DropDownListFor(m => m.StatusId, new SelectList(Model.ActionStatusList, "StatusId", "Description", Model.StatusId).AddDefaultOption("-- Chọn trạng thái --", "0"), new { @class = "form-select select2 js" })
+                        @Html.DropDownListFor(m => m.StatusId, new SelectList(Model.ActionStatusList, "ActionStatusId", "Description", Model.StatusId).AddDefaultOption("-- Chọn trạng thái --", "0"), new { @class = "form-select select2 js" })
                     </div>
                     <div class="col-md-2 mb-3">
                         <div class="btn-list flex-nowrap">

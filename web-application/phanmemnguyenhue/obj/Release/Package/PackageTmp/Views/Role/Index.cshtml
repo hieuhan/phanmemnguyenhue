@@ -8,7 +8,7 @@
     <div class="container-xl">
         <div class="row g-2 align-items-center">
             <div class="col-md-12 ms-auto">
-                <form action="@Url.Action("Index" , "Role")" class="form-group row" method="get">
+                <form action="@Url.Action("index" , "role")" class="form-group row" method="get">
                     <div class="col-md-3 mb-3">
                         @Html.TextBoxFor(x => x.Keywords, new { @class = "form-control", placeholder = "Tên Quyền truy cập" })
                     </div>
@@ -107,7 +107,7 @@
                                                 <div class="btn-list flex-nowrap">
                                                     @if (Model.RolesList[index].BuildIn != 1)
                                                     {
-                                                        <a href="javascript:void(0)" class="edit-form" title="@string.Format("Gán Chức năng cho Quyền truy cập {0}", Model.RolesList[index].Name)" data-w="1200" data-url="@Url.Action("Index", "RoleAction", new { Area = "Admin", RoleId = Model.RolesList[index].RoleId })">
+                                                        <a href="javascript:void(0)" class="edit-form" title="@string.Format("Gán Chức năng cho Quyền truy cập {0}", Model.RolesList[index].Name)" data-w="1200" data-url="@Url.Action("index", "roleaction", new { RoleId = Model.RolesList[index].RoleId })">
                                                             <span class="nav-link-icon d-md-none d-lg-inline-block">
                                                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-square-plus" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                                                     <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>

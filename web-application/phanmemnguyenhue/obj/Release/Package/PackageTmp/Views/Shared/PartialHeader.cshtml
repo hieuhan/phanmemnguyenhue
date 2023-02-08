@@ -21,7 +21,7 @@
                 </a>
             </div>
             <div class="nav-item dropdown">
-                <a href="@Url.Action("UserProfile","Account")" title="Hồ sơ & tài khoản" class="nav-link d-flex lh-1 text-reset p-0" data-bs-toggle="dropdown" aria-label="Open user menu">
+                <a href="@Url.Action("Profile","Account")" title="Hồ sơ & tài khoản" class="nav-link d-flex lh-1 text-reset p-0" data-bs-toggle="dropdown" aria-label="Open user menu">
                     <span class="avatar avatar-sm" style="background-image: url(@CurrentUser.Avatar.GetImageUrl_Mobile())"></span>
                     <div class="d-none d-xl-block ps-2">
                         <div>@CurrentUser.UserName</div>
@@ -39,7 +39,7 @@
         <div class="collapse navbar-collapse" id="navbar-menu">
             <div class="d-flex flex-column flex-md-row flex-fill align-items-stretch align-items-md-center">
                 <ul class="navbar-nav">
-                    @if (Model.ActionsList.IsAny())
+                    @if (Model.ParentActionsList.IsAny())
                     {
                         List<Actions> actionsList, childActionsList;
                         foreach (var item in Model.ParentActionsList)

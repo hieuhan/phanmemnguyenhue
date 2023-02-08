@@ -156,17 +156,17 @@ namespace phanmemnguyenhue.Controllers
                 actionTypes = actionTypesList.FirstOrDefault(x => x.ActionTypeCode == "SALE");
             } 
             
-            if(actionTypes == null)
-            {
-                return Redirect(Url.Action("NotFound", "Error"));
-            }
+            //if(actionTypes == null)
+            //{
+            //    return Redirect(Url.Action("NotFound", "Error"));
+            //}
 
             Products products = new Products
             {
                 ActBy = myPrincipal.UserName,
                 SiteId = siteId,
                 CustomerId = customerId,
-                ActionTypeId = actionTypes.ActionTypeId,
+                ActionTypeId = actionTypes != null && actionTypes.ActionTypeId > 0 ? actionTypes.ActionTypeId : 0,
                 LandTypeId = landTypeId,
                 ProvinceId = provinceId,
                 DistrictId = districtId,
@@ -285,17 +285,17 @@ namespace phanmemnguyenhue.Controllers
                 actionTypes = actionTypesList.FirstOrDefault(x => x.ActionTypeCode == "RENT");
             }
 
-            if (actionTypes == null)
-            {
-                return Redirect(Url.Action("NotFound", "Error"));
-            }
+            //if (actionTypes == null)
+            //{
+            //    return Redirect(Url.Action("NotFound", "Error"));
+            //}
 
             Products products = new Products
             {
                 ActBy = myPrincipal.UserName,
                 SiteId = siteId,
                 CustomerId = customerId,
-                ActionTypeId = actionTypes.ActionTypeId,
+                ActionTypeId = actionTypes != null && actionTypes.ActionTypeId > 0 ? actionTypes.ActionTypeId : 0,
                 LandTypeId = landTypeId,
                 ProvinceId = provinceId,
                 DistrictId = districtId,

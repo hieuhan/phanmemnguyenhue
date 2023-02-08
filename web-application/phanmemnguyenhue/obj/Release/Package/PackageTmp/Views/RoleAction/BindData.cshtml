@@ -17,7 +17,7 @@
         string[] actionLevelsList = new string[] { };
         ActionStatus actionStatus = null;
         <div class="table-responsive">
-            <form action="@Url.Action("MultipleAction", "RoleAction", new { Area = "Admin" })" data-ajax="true" data-ajax-begin="app.ajaxEvents.OnBegin" data-ajax-complete="app.ajaxEvents.OnComplete" data-ajax-failure="app.ajaxEvents.OnFailure" data-ajax-method="Post" data-ajax-success="app.ajaxEvents.OnSuccess" method="post" novalidate="novalidate">
+            <form action="@Url.Action("MultipleAction", "RoleAction")" data-ajax="true" data-ajax-begin="app.ajaxEvents.OnBegin" data-ajax-complete="app.ajaxEvents.OnComplete" data-ajax-failure="app.ajaxEvents.OnFailure" data-ajax-method="Post" data-ajax-success="app.ajaxEvents.OnSuccess" method="post" novalidate="novalidate">
                 @Html.AntiForgeryToken()
                 @Html.HiddenFor(x => x.RoleId)
                 <table class="table table-vcenter card-table">
