@@ -1,4 +1,3 @@
-const axios = require('axios');
 const cheerio = require('cheerio');
 const UserAgent = require('user-agents');
 const userAgent = new UserAgent({ deviceCategory: 'desktop' });
@@ -186,7 +185,9 @@ const scraperObject = {
 
                     if(data.props.initialState && data.props.initialProps)
                     {
-                        const [provinceId, customerId] = await Promise.all([
+                        const [[parentCategoryId, categoryId], actionTypeId, provinceId, customerId] = await Promise.all([
+                            parserCategory(data, pageUrl, productUrl),
+                            parserActionType(data, pageUrl, productUrl),
                             parserProvince(data, pageUrl, productUrl),
                             parserCustomer(data, pageUrl, productUrl)
                         ]);
@@ -205,12 +206,12 @@ const scraperObject = {
                                 }
                             }
 
-                            productId = await parserProduct(data, provinceId, (districtId || 0), (wardId || 0), (streetId || 0), customerId, pageUrl, productUrl);
+                            productId = await parserProduct(data, categoryId, parentCategoryId, actionTypeId, provinceId, (districtId || 0), (wardId || 0), (streetId || 0), customerId, pageUrl, productUrl);
                         
-                            if(productId > 0)
-                            {
-                                await parserCategory(data, productId, pageUrl, productUrl);
-                            }
+                            // if(productId > 0)
+                            // {
+                            //     await parserCategory(data, productId, pageUrl, productUrl);
+                            // }
                         }
                     }
                     
@@ -222,9 +223,9 @@ const scraperObject = {
                 }
             }
 
-            const parserCategory = async (data, productId, pageUrl, productUrl) =>
+            const parserCategory = async (data, pageUrl, productUrl) =>
             {
-                let categoryId = 0;
+                let parentCategoryId = null, categoryId = null;
                 try 
                 {
                     if(data.props.initialState.nav.navObj.categoryObj.label.length > 0)
@@ -232,8 +233,6 @@ const scraperObject = {
                         const categoryName = data.props.initialState.nav.navObj.categoryObj.label;
 
                         const parentCaegoryName = getParentCategory(categoryName);
-
-                        let parentId = null;
 
                         if(parentCaegoryName != null)
                         {
@@ -243,41 +242,41 @@ const scraperObject = {
                                 Name: parentCaegoryName,
                             }
 
-                            parentId = await database.categoryInsert(parentCategory);
+                            parentCategoryId = await database.categoryInsert(parentCategory);
                         }
 
                         const category = 
                         {
                             SiteId: configs.siteId,
-                            ParentId: parentId,
+                            ParentId: parentCategoryId,
                             Name: categoryName,
                         }
 
                         categoryId = await database.categoryInsert(category);
 
-                        if(parentId != null && parentId > 0)
-                        {
-                            const parentProductCategory = 
-                            {
-                                SiteId: configs.siteId,
-                                ProductId: productId,
-                                CategoryId: parentId
-                            }
+                        // if(parentId != null && parentId > 0)
+                        // {
+                        //     const parentProductCategory = 
+                        //     {
+                        //         SiteId: configs.siteId,
+                        //         ProductId: productId,
+                        //         CategoryId: parentId
+                        //     }
 
-                            await database.productCategoryInsert(parentProductCategory);
-                        }
+                        //     await database.productCategoryInsert(parentProductCategory);
+                        // }
 
-                        if(categoryId > 0)
-                        {
-                            const productCategory = 
-                            {
-                                SiteId: configs.siteId,
-                                ProductId: productId,
-                                CategoryId: categoryId
-                            }
+                        // if(categoryId > 0)
+                        // {
+                        //     const productCategory = 
+                        //     {
+                        //         SiteId: configs.siteId,
+                        //         ProductId: productId,
+                        //         CategoryId: categoryId
+                        //     }
 
-                            await database.productCategoryInsert(productCategory);
-                        }
+                        //     await database.productCategoryInsert(productCategory);
+                        // }
                     }
                 } 
                 catch (error) 
@@ -285,7 +284,31 @@ const scraperObject = {
                     await scraperObject.scraperLog('parserCategory', error, pageUrl, productUrl);
                 }
 
-                return categoryId;
+                return [parentCategoryId, categoryId];
+            }
+
+            const parserActionType = async (data, pageUrl, productUrl) =>
+            {
+                let actionTypeId = 0;
+                try 
+                {
+                    if(data.props.initialState.adView.adInfo.ad.type_name && data.props.initialState.adView.adInfo.ad.type_name.length > 0)
+                    {
+                        const actionType = 
+                        {
+                            SiteId: configs.siteId,
+                            Name: data.props.initialState.adView.adInfo.ad.type_name
+                        }
+
+                        actionTypeId = await database.actionTypeInsert(actionType);
+                    }
+                } 
+                catch (error) 
+                {
+                    await scraperObject.scraperLog('parserActionType', error, pageUrl, productUrl);
+                }
+
+                return actionTypeId;
             }
 
             const parserProvince = async (data, pageUrl, productUrl) =>
@@ -420,7 +443,7 @@ const scraperObject = {
                 return resultVar;
             }
 
-            const parserProduct = async (data, provinceId, districtId, wardId, streetId, customerId, pageUrl, productUrl) =>
+            const parserProduct = async (data, categoryId, parentCategoryId, actionTypeId, provinceId, districtId, wardId, streetId, customerId, pageUrl, productUrl) =>
             {
                 let resultVar = 0;
                 try 
@@ -444,6 +467,8 @@ const scraperObject = {
 
                             let product = {
                                 SiteId: configs.siteId,
+                                CategoryId: categoryId,
+                                ParentCategoryId: parentCategoryId,
                                 Title: title,
                                 ProductUrl: productUrl,
                                 ImagePath: imagePath,
@@ -457,6 +482,7 @@ const scraperObject = {
                                 Address: address,
                                 Verified: verified,
                                 IsVideo: isVideo,
+                                ActionTypeId: actionTypeId,
                                 PublishedAt: publishedAt,
                                 ExpirationAt: expirationAt
                             }
@@ -480,19 +506,22 @@ const scraperObject = {
                 {
                     for(key in categories)
                     {
-                        const item = categories[key];
-
-                        if(item.subCategories.entities)
+                        if(key != 'mua-ban-bat-dong-san' && key != 'thue-bat-dong-san' && key != 'mua-ban-xe' && key != 'viec-lam')
                         {
-                            for(k in item.subCategories.entities)
-                            {
-                                const category = item.subCategories.entities[k];
+                            const item = categories[key];
 
-                                if(category.name == categoryName)
+                            if(item.subCategories.entities)
+                            {
+                                for(k in item.subCategories.entities)
                                 {
-                                    if(parentCaegory == null && item.name != categoryName)
+                                    const category = item.subCategories.entities[k];
+    
+                                    if(category.name == categoryName)
                                     {
-                                        parentCaegory = item.name;
+                                        if(parentCaegory == null && item.name != categoryName)
+                                        {
+                                            parentCaegory = item.name;
+                                        }
                                     }
                                 }
                             }
