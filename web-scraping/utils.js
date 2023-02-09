@@ -191,6 +191,20 @@ function urlSetParam(pageUrl, param, value)
     return resultVar;
 }
 
+function urlGetCurrentPage(url)
+{
+    let currentPage = 1;
+    try 
+    {
+        currentPage = url.substring(url.lastIndexOf('/') + 1).replace('p','');
+    } 
+    catch (error) 
+    {
+        console.error(`getCurrentPageUrl('${url}') error => ${error}\n`);
+    }
+
+    return currentPage;
+}
 
 module.exports = {
     validateUrl: validateUrl,
@@ -201,5 +215,6 @@ module.exports = {
     autoScroll: autoScroll,
     waitForVisible: waitForVisible,
     urlGetParam: urlGetParam,
-    urlSetParam: urlSetParam
+    urlSetParam: urlSetParam,
+    urlGetCurrentPage: urlGetCurrentPage
 }
