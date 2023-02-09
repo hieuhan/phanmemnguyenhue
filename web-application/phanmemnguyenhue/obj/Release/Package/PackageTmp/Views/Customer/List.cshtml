@@ -16,7 +16,7 @@
                         @Html.TextBoxFor(x => x.Keywords, new { @class = "form-control", placeholder = "Tìm theo Họ tên, email, số điện thoại" })
                     </div>
                     <div class="col-md-2 mb-3">
-                        <select name="CategoryId" class="form-select select22">
+                        <select name="CategoryId" class="form-select select22 push">
                             <option value="0">-- Chọn danh mục --</option>
                             @if (Model.CategoriesList.IsAny())
                             {

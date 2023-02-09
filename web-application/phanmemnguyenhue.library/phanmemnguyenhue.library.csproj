@@ -64,6 +64,7 @@
     <Compile Include="Streets.cs" />
     <Compile Include="UserRoles.cs" />
     <Compile Include="Users.cs" />
+    <Compile Include="UserSites.cs" />
     <Compile Include="UserStatus.cs" />
     <Compile Include="Wards.cs" />
   </ItemGroup>

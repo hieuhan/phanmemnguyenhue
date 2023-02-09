@@ -47,7 +47,7 @@ namespace phanmemnguyenhue.Controllers
                 showEmail = 1;
             }
 
-            Task<List<Sites>> sitesTask = Sites.Static_GetList();
+            Task<List<Sites>> sitesTask = Sites.Static_GetListByUser(myPrincipal.UserName);
             Task<List<Categories>> categoriesTask = Categories.Static_GetList(siteId);
             Task<List<ActionTypes>> actionTypesTask = ActionTypes.Static_GetList(siteId);
             Task<List<LandTypes>> landTypesTask = LandTypes.Static_GetList(siteId);
@@ -176,12 +176,27 @@ namespace phanmemnguyenhue.Controllers
                         ws.Cell("A1").Value = "Danh sách khách hàng";
                         ws.Cell("A1").Style.Font.Bold = true;
 
+                        if(model.SiteId > 0 && model.SitesList.IsAny())
+                        {
+                            var site = model.SitesList.FirstOrDefault(x => x.SiteId == model.SiteId);
+
+                            if (site != null && !string.IsNullOrWhiteSpace(site.Name))
+                            {
+                                headerRowName += site.Name;
+                            }
+                        }    
+
                         if (model.ProvinceId > 0 && model.ProvincesList.IsAny())
                         {
                             var province = model.ProvincesList.FirstOrDefault(x => x.ProvinceId == model.ProvinceId);
 
                             if (province != null && !string.IsNullOrWhiteSpace(province.Name))
                             {
+                                if (!string.IsNullOrWhiteSpace(headerRowName))
+                                {
+                                    headerRowName += ", ";
+                                }
+
                                 headerRowName += province.Name;
                             }
                         }
@@ -213,6 +228,51 @@ namespace phanmemnguyenhue.Controllers
                                 }
 
                                 headerRowName += wards.Name;
+                            }
+                        }
+
+                        if (model.CategoryId > 0 && model.CategoriesList.IsAny())
+                        {
+                            var category = model.CategoriesList.FirstOrDefault(x => x.CategoryId == model.CategoryId);
+
+                            if (category != null && !string.IsNullOrWhiteSpace(category.Name))
+                            {
+                                if (!string.IsNullOrWhiteSpace(headerRowName))
+                                {
+                                    headerRowName += ", ";
+                                }
+
+                                headerRowName += category.Name;
+                            }
+                        }
+
+                        if (model.ActionTypeId > 0 && model.ActionTypesList.IsAny())
+                        {
+                            var actionType = model.ActionTypesList.FirstOrDefault(x => x.ActionTypeId == model.ActionTypeId);
+
+                            if (actionType != null && !string.IsNullOrWhiteSpace(actionType.Name))
+                            {
+                                if (!string.IsNullOrWhiteSpace(headerRowName))
+                                {
+                                    headerRowName += ", ";
+                                }
+
+                                headerRowName += actionType.Name;
+                            }
+                        }
+
+                        if (model.LandTypeId > 0 && model.LandTypesList.IsAny())
+                        {
+                            var landType = model.LandTypesList.FirstOrDefault(x => x.LandTypeId == model.LandTypeId);
+
+                            if (landType != null && !string.IsNullOrWhiteSpace(landType.Name))
+                            {
+                                if (!string.IsNullOrWhiteSpace(headerRowName))
+                                {
+                                    headerRowName += ", ";
+                                }
+
+                                headerRowName += landType.Name;
                             }
                         }
 

@@ -84,14 +84,16 @@ namespace phanmemnguyenhue.Controllers
             var gendersTask = Genders.Static_GetList();
             var userStatusTask = UserStatus.Static_GetList();
             var rolesTask = Roles.Static_GetList();
+            var sitesTask = Sites.Static_GetList();
 
-            await Task.WhenAll(gendersTask, userStatusTask, rolesTask);
+            await Task.WhenAll(gendersTask, userStatusTask, rolesTask, sitesTask);
 
             UserAddVM model = new UserAddVM
             {
                 UserStatusList = userStatusTask != null && userStatusTask.Result.IsAny() ? userStatusTask.Result : new List<UserStatus>(),
                 GendersList = gendersTask != null && gendersTask.Result.IsAny() ? gendersTask.Result : new List<Genders>(),
-                RolesList = rolesTask != null && rolesTask.Result.IsAny() ? rolesTask.Result : new List<Roles>()
+                RolesList = rolesTask != null && rolesTask.Result.IsAny() ? rolesTask.Result : new List<Roles>(),
+                SitesList = sitesTask != null && sitesTask.Result.IsAny() ? sitesTask.Result : new List<Sites>()
             };
 
             return PartialView(model);
@@ -144,6 +146,11 @@ namespace phanmemnguyenhue.Controllers
                     if (model.RoleIds.IsAny())
                     {
                         await UserRoles.Static_InsertMultiple(myPrincipal.UserName, users.UserId, string.Join(",", model.RoleIds));
+                    }
+
+                    if (model.SiteIds.IsAny())
+                    {
+                        await UserSites.Static_InsertMultiple(myPrincipal.UserName, users.UserId, string.Join(",", model.SiteIds));
                     }
 
                     if (model.AddAnother)
@@ -212,13 +219,15 @@ namespace phanmemnguyenhue.Controllers
             var gendersTask = Genders.Static_GetList();
             var userStatusTask = UserStatus.Static_GetList();
             var rolesTask = Roles.Static_GetListBy(myPrincipal.UserName, users.UserId);
+            var sitesTask = Sites.Static_GetListBy(myPrincipal.UserName, users.UserId);
 
-            await Task.WhenAll(gendersTask, userStatusTask, rolesTask);
+            await Task.WhenAll(gendersTask, userStatusTask, rolesTask, sitesTask);
 
             var model = new UserEditVM
             {
                 Users = users,
                 RolesList = rolesTask != null && rolesTask.Result.IsAny() ? rolesTask.Result : new List<Roles>(),
+                SitesList = sitesTask != null && sitesTask.Result.IsAny() ? sitesTask.Result : new List<Sites>(),
                 GendersList = gendersTask != null && gendersTask.Result.IsAny() ? gendersTask.Result : new List<Genders>(),
                 UserStatusList = userStatusTask != null && userStatusTask.Result.IsAny() ? userStatusTask.Result : new List<UserStatus>()
             };
@@ -312,9 +321,13 @@ namespace phanmemnguyenhue.Controllers
 
                 if (tuple != null && !string.IsNullOrWhiteSpace(tuple.Item1) && tuple.Item1.Equals(ConstantHelper.ActionStatusSuccess))
                 {
-                    Tuple<string, string> userRolesInsertResult = await UserRoles.Static_InsertMultiple(myPrincipal.UserName, model.Users.UserId, model.RoleIds.IsAny() ? string.Join(",", model.RoleIds) : string.Empty,
+                    var userRolesInsertTask = UserRoles.Static_InsertMultiple(myPrincipal.UserName, model.Users.UserId, model.RoleIds.IsAny() ? string.Join(",", model.RoleIds) : string.Empty,
                         model.RoleIdsRemove.IsAny() ? string.Join(",", model.RoleIdsRemove) : string.Empty);
 
+                    var userSitesInsertTask = UserSites.Static_InsertMultiple(myPrincipal.UserName, model.Users.UserId, model.SiteIds.IsAny() ? string.Join(",", model.SiteIds) : string.Empty,
+                        model.SiteIdsRemove.IsAny() ? string.Join(",", model.SiteIdsRemove) : string.Empty);
+
+                    await Task.WhenAll(userRolesInsertTask, userSitesInsertTask);
 
                     return Json(new
                     {

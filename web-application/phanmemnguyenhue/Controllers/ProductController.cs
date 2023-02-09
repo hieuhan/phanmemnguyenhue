@@ -49,7 +49,7 @@ namespace phanmemnguyenhue.Controllers
                 IsVideo = isVideo
             };
 
-            Task<List<Sites>> sitesTask = Sites.Static_GetList();
+            Task<List<Sites>> sitesTask = Sites.Static_GetListByUser(myPrincipal.UserName);
             Task<List<Categories>> categoriesTask = Categories.Static_GetList(siteId);
             Task<List<ActionTypes>> actionTypesTask = ActionTypes.Static_GetList(siteId);
             Task<List<LandTypes>> landTypesTask = LandTypes.Static_GetList(siteId);
@@ -192,7 +192,7 @@ namespace phanmemnguyenhue.Controllers
                 IsVideo = isVideo
             };
 
-            Task<List<Sites>> sitesTask = Sites.Static_GetList();
+            Task<List<Sites>> sitesTask = Sites.Static_GetListByUser(myPrincipal.UserName);
             Task<List<LandTypes>> landTypesTask = LandTypes.Static_GetList(siteId);
             Task<List<Provinces>> provincesTask = Provinces.Static_GetList(siteId);
             Task<List<Districts>> districtsTask = null;
@@ -321,7 +321,7 @@ namespace phanmemnguyenhue.Controllers
                 IsVideo = isVideo
             };
 
-            Task<List<Sites>> sitesTask = Sites.Static_GetList();
+            Task<List<Sites>> sitesTask = Sites.Static_GetListByUser(myPrincipal.UserName);
             Task<List<LandTypes>> landTypesTask = LandTypes.Static_GetList(siteId);
             Task<List<Provinces>> provincesTask = Provinces.Static_GetList(siteId);
             Task<List<Districts>> districtsTask = null;

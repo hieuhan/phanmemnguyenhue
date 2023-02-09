@@ -121,6 +121,32 @@
                                 }
                             </div>
                         </div>
+                        <div class="form-group mb-3 row">
+                            <div class="col-3 col-form-label">Site được truy cập</div>
+                            <div class="col">
+                                @if (Model.SitesList.IsAny())
+                                {
+                                    foreach (var item in Model.SitesList)
+                                    {
+                                        <label class="form-check form-check-inline form-checkbox">
+                                            @if (item.UserSiteId > 0)
+                                            {
+                                                <input name="SiteIds" value="@item.SiteId" checked class="form-check-input site" type="checkbox" />
+                                            }
+                                            else
+                                            {
+                                                <input name="SiteIds" value="@item.SiteId" class="form-check-input site" type="checkbox" />
+                                            }
+                                            <span class="form-check-label">@item.Description</span>
+                                            @if (item.UserSiteId <= 0)
+                                            {
+                                                <input type="hidden" value="@item.SiteId" name="SiteIdsRemove">
+                                            }
+                                        </label>
+                                    }
+                                }
+                            </div>
+                        </div>
                     }
                     <div class="card-footer">
                         <div class="d-flex">

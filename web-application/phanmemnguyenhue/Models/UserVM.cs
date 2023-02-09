@@ -162,6 +162,9 @@ namespace phanmemnguyenhue.Models
         public bool RemoveImage { get; set; }
 
         public Users Users { get; set; }
+        public List<int> SiteIds { get; set; }
+        public List<int> SiteIdsRemove { get; set; }
+        public List<Sites> SitesList { get; set; }
         public List<int> RoleIds { get; set; }
         public List<int> RoleIdsRemove { get; set; }
         public List<Roles> RolesList { get; set; }
@@ -214,6 +217,10 @@ namespace phanmemnguyenhue.Models
         public byte UserStatusId { get; set; }
 
         public Users Users { get; set; }
+
+        public List<int> SiteIds { get; set; }
+        public List<int> SiteIdsRemove { get; set; }
+        public List<Sites> SitesList { get; set; }
         public List<int> RoleIds { get; set; }
         public List<int> RoleIdsRemove { get; set; }
         public List<Roles> RolesList { get; set; }

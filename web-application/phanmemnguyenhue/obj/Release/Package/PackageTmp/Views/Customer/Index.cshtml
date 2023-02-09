@@ -16,10 +16,10 @@
                         @Html.TextBoxFor(x => x.Keywords, new { @class = "form-control", placeholder = "Tìm theo Họ tên, email, số điện thoại" })
                     </div>
                     <div class="col-md-2 mb-3">
-                        @Html.DropDownListFor(m => m.ActionTypeId, new SelectList(Model.ActionTypesList, "ActionTypeId", "Name", Model.ActionTypeId).AddDefaultOption("-- Chọn hành động --", "0"), new { @class = "form-select select2" })
+                        @Html.DropDownListFor(m => m.ActionTypeId, new SelectList(Model.ActionTypesList, "ActionTypeId", "Name", Model.ActionTypeId).AddDefaultOption("-- Chọn hành động --", "0"), new { @class = "form-select select2 push" })
                     </div>
                     <div class="col-md-2 mb-3">
-                        @Html.DropDownListFor(m => m.LandTypeId, new SelectList(Model.LandTypesList, "LandTypeId", "Name", Model.LandTypeId).AddDefaultOption("-- Chọn Loại nhà đất --", "0"), new { @class = "form-select select2" })
+                        @Html.DropDownListFor(m => m.LandTypeId, new SelectList(Model.LandTypesList, "LandTypeId", "Name", Model.LandTypeId).AddDefaultOption("-- Chọn Loại nhà đất --", "0"), new { @class = "form-select select2 push" })
                     </div>
                     <div class="col-md-2 mb-3">
                         @Html.DropDownListFor(m => m.ProvinceId, new SelectList(Model.ProvincesList, "ProvinceId", "Name", Model.ProvinceId).AddDefaultOption("-- Chọn Tỉnh / Thành --", "0"), new { @class = "form-select load-districts select2 push" })

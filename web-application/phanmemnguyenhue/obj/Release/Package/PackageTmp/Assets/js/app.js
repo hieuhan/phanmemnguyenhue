@@ -397,6 +397,18 @@
             var self = $(this), projectId = self.val();
             app.pushState({ 'ProjectId': projectId });
         })
+        $(document).on('change', 'select[name="ActionTypeId"].push', function () {
+            var self = $(this), actionTypeId = self.val();
+            app.pushState({ 'ActionTypeId': actionTypeId });
+        })
+        $(document).on('change', 'select[name="LandTypeId"].push', function () {
+            var self = $(this), landTypeId = self.val();
+            app.pushState({ 'LandTypeId': landTypeId });
+        })
+        $(document).on('change', 'select[name="CategoryId"].push', function () {
+            var self = $(this), categoryId = self.val();
+            app.pushState({ 'CategoryId': categoryId });
+        })
         $(document).on('click', '.add-ward', function () {
             var self = $(this), href = self.data('href'), provinceId = $('select[name="ProvinceId"] option:selected').val(),
                 districtId = $('select[name="DistrictId"] option:selected').val(),
@@ -514,6 +526,21 @@
                     } else {
                         $(this).closest('label')
                             .append('<input type="hidden" value="' + $(this).val() + '" name="RoleIdsRemove">');
+                    }
+                }
+            });
+        $(document).on('change',
+            '.site',
+            function () {
+                if (this.checked) {
+                    $(this).closest('label').find('input[type=hidden]').remove();
+                } else {
+                    var input = $(this).closest('label').find('input[type=hidden]');
+                    if (input.length) {
+                        input.val($(this).val());
+                    } else {
+                        $(this).closest('label')
+                            .append('<input type="hidden" value="' + $(this).val() + '" name="SiteIdsRemove">');
                     }
                 }
             });
