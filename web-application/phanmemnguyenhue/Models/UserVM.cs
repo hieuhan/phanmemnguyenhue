@@ -92,6 +92,24 @@ namespace phanmemnguyenhue.Models
         public string ConfirmPassword { get; set; }
     }
 
+    public class ChangePasswordVM : BaseViewModel
+    {
+        [Display(Name = "Mật khẩu")]
+        [DataType(DataType.Password)]
+        [Required(ErrorMessage = "Vui lòng nhập {0}")]
+        [StringLength(100, ErrorMessage = "{0} bao gồm từ {2} ký tự trở lên.", MinimumLength = 6)]
+        public string Password { get; set; }
+
+        [Display(Name = "Mật khẩu xác nhận")]
+        [DataType(DataType.Password)]
+        [Required(ErrorMessage = "Vui lòng nhập {0}")]
+        [StringLength(100, ErrorMessage = "{0} bao gồm từ {2} ký tự trở lên.", MinimumLength = 6)]
+        [Compare("Password", ErrorMessage = "{0} không đúng.")]
+        public string ConfirmPassword { get; set; }
+        public int UserId { get; set; }
+        public Users User { get; set; }
+    }
+
     public class UserAddVM : BaseViewModel
     {
         public int UserId { get; set; }

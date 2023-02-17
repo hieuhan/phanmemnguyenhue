@@ -10,7 +10,6 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 
 namespace phanmemnguyenhue.Controllers
@@ -334,6 +333,119 @@ namespace phanmemnguyenhue.Controllers
                         Completed = true,
                         Message = tuple.Item2,
                         Cb = Convert.ToBase64String(Encoding.UTF8.GetBytes(string.Format("app.closeDialog('#_editForm');app.bindTableData('{0}')", Url.Action("BindData", "User"))))
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        Completed = false,
+                        Message = tuple.Item2
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+
+            return Json(new
+            {
+                Completed = false,
+                Message = "Quý khách vui lòng thử lại sau."
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> ChangePassword(int userId = 0)
+        {
+            if (!Request.IsAjaxRequest())
+            {
+                return Redirect("/404.html");
+            }
+
+            if (userId <= 0)
+            {
+                return Redirect("/404.html");
+            }
+
+            MyPrincipal myPrincipal = AppExtensions.GetCurrentUser();
+
+            Users users = await Users.Static_GetById(myPrincipal.UserName, userId);
+
+            if (users == null || users.UserId <= 0)
+            {
+                return Redirect("/404.html");
+            }
+
+            if (users.BuildIn == 1)
+            {
+                Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                return Json(new
+                {
+                    Completed = false,
+                    //ReturnUrl = Url.Action("AccessDenied", "Error")
+                }, JsonRequestBehavior.AllowGet);
+            }
+
+            ChangePasswordVM model = new ChangePasswordVM
+            {
+                UserId = userId,
+                User = users
+            };
+
+            return PartialView(model);
+        }
+
+        [HttpPost]
+        [ValidateInput(false)]
+        [ValidateAntiForgeryToken]
+        public async Task<JsonResult> ChangePassword(ChangePasswordVM model)
+        {
+            if (model.UserId <= 0)
+            {
+                Response.StatusCode = (int)HttpStatusCode.NotFound;
+                return Json(new
+                {
+                    Completed = false,
+                    //ReturnUrl = Url.Action("NotFound", "Error")
+                }, JsonRequestBehavior.AllowGet);
+            }
+
+            MyPrincipal myPrincipal = AppExtensions.GetCurrentUser();
+
+            if (ModelState.IsValid)
+            {
+                model.User = await Users.Static_GetById(myPrincipal.UserName, model.UserId);
+
+                if (model.User == null || model.User.UserId <= 0)
+                {
+                    Response.StatusCode = (int)HttpStatusCode.NotFound;
+                    return Json(new
+                    {
+                        Completed = false,
+                        //ReturnUrl = Url.Action("NotFound", "Error")
+                    }, JsonRequestBehavior.AllowGet);
+                }
+
+                if (model.User.BuildIn == 1)
+                {
+                    Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                    return Json(new
+                    {
+                        Completed = false,
+                        //ReturnUrl = Url.Action("AccessDenied", "Error")
+                    }, JsonRequestBehavior.AllowGet);
+                }
+
+                model.User.ActBy = myPrincipal.UserName;
+                model.User.Password = HashHelper.HashPassword(model.Password);
+
+                Tuple<string, string> tuple = await model.User.ChangePassword();
+
+                if (tuple != null && !string.IsNullOrWhiteSpace(tuple.Item1) && tuple.Item1.Equals(ConstantHelper.ActionStatusSuccess))
+                {
+                    return Json(new
+                    {
+                        Completed = true,
+                        Message = tuple.Item2,
+                        Cb = Convert.ToBase64String(Encoding.UTF8.GetBytes("app.closeDialog('#_editForm');"))
                     }, JsonRequestBehavior.AllowGet);
                 }
                 else
