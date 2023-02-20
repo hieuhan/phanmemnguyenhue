@@ -206,6 +206,10 @@ function urlGetCurrentPage(url)
     return currentPage;
 }
 
+function ucFirst(string){
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 module.exports = {
     validateUrl: validateUrl,
     dateToISOString: dateToISOString,
@@ -216,5 +220,6 @@ module.exports = {
     waitForVisible: waitForVisible,
     urlGetParam: urlGetParam,
     urlSetParam: urlSetParam,
-    urlGetCurrentPage: urlGetCurrentPage
+    urlGetCurrentPage: urlGetCurrentPage,
+    ucFirst: ucFirst
 }
