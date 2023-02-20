@@ -56,7 +56,7 @@ const scraperObject = {
                 {
                     console.log(`Thu thập url bài đăng =>\n${pageUrl}\n`);
 
-                    let productUrls = await page.$$eval('.property-list .row-item', card => 
+                    let productUrls = await page.$$eval('.list-center article figure', card => 
                     {
                         return card.map(el =>
                         {
@@ -64,7 +64,7 @@ const scraperObject = {
                         });
                     });
 
-                    //console.log(productUrls);
+                    console.log(productUrls);
 
                     let pagePromise = (productUrl) => new Promise(async(resolve, reject) =>{
                         try 
@@ -200,22 +200,39 @@ const scraperObject = {
                 let actionTypeId = 0;
                 try 
                 {
-                    let breadcrumbElement = $('.breadcrumb').first();
+                    let breadcrumbElement = $('#brm').first();
 
                     if(breadcrumbElement.length > 0)
                     {
-                        let breadcrumbs = breadcrumbElement.text().trim().replace(/\r/g, '').split(/\n/).filter(function(v){return v!==''});
+                        let breadcrumbs = breadcrumbElement.text().trim().split('>').filter(function(v){return v!==''});
 
                         if(breadcrumbs.length > 1)
                         {
-                            const actionTypeName = breadcrumbs[1].trim();
+                            let actionTypeName = breadcrumbs[1].trim();
+
+                            if(actionTypeName.indexOf('Bán') != -1)
+                            {
+                                actionTypeName = 'Bán';
+                            }
+                            else if(actionTypeName.indexOf('Cho thuê') != -1)
+                            {
+                                actionTypeName = 'Cho thuê';
+                            }
+                            else if(actionTypeName.indexOf('Cần mua') != -1)
+                            {
+                                actionTypeName = 'Cần mua';
+                            }
+                            else if(actionTypeName.indexOf('Cần thuê') != -1)
+                            {
+                                actionTypeName = 'Cần thuê';
+                            }
 
                             if(actionTypeName.length > 0)
                             {
                                 const actionType = 
                                 {
                                     SiteId: configs.siteId,
-                                    Name: actionTypeName.replace('Mua bán nhà đất', 'Bán').replace('Cho thuê nhà đất', 'Cho thuê')
+                                    Name: actionTypeName
                                 }
 
                                 actionTypeId = await database.actionTypeInsert(actionType);
@@ -237,19 +254,19 @@ const scraperObject = {
                 try 
                 {
 
-                    let breadcrumbElement = $('.breadcrumb').first();
+                    let breadcrumbElement = $('#brm').first();
 
                     if(breadcrumbElement.length > 0)
                     {
-                        let breadcrumbs = breadcrumbElement.text().trim().replace(/\r/g, '').split(/\n/).filter(function(v){return v!==''});
+                        let breadcrumbs = breadcrumbElement.text().trim().split('>').filter(function(v){return v!==''});
 
-                        if(breadcrumbs.length > 2)
+                        if(breadcrumbs.length > 1)
                         {
-                            let apartmentTypeName = breadcrumbs[2].trim();
+                            let apartmentTypeName = breadcrumbs[1].trim();
 
                             if(apartmentTypeName.length > 0)
                             {
-                                apartmentTypeName = apartmentTypeName.replace('Mua bán', '').replace('Cho thuê', '').trim();
+                                apartmentTypeName = apartmentTypeName.replace('Bán', '').replace('Cho thuê', '').replace('Cần mua', '').replace('Cần thuê', '').trim();
 
                                 let apartmentType = {
                                     SiteId: configs.siteId,
@@ -274,15 +291,15 @@ const scraperObject = {
                 let provinceId = 0;
                 try 
                 {
-                    let breadcrumbElement = $('.reales-location .col-left .infor').first();
+                    let breadcrumbElement = $('#brm').first();
 
                     if(breadcrumbElement.length > 0)
                     {
-                        let breadcrumbs = breadcrumbElement.text().replace('Vị trí:', '').trim().split('-');
+                        let breadcrumbs = breadcrumbElement.text().trim().split('>').filter(function(v){return v!==''});
 
-                        if(breadcrumbs.length > 0)
+                        if(breadcrumbs.length > 2)
                         {
-                            const provinceName = breadcrumbs[breadcrumbs.length -1].replace(/&nbsp;/g, '').trim();
+                            const provinceName = breadcrumbs[2].trim();
 
                             if(provinceName.length > 0)
                             {
@@ -310,54 +327,26 @@ const scraperObject = {
                 let districtId = 0;
                 try 
                 {
-                    let breadcrumbElement = $('.breadcrumb').first();
+                    let breadcrumbElement = $('#brm').first();
 
                     if(breadcrumbElement.length > 0)
                     {
-                        let locationInfo = '';
-                        const realesLocationElement = $('.reales-location .col-left .infor').first();
+                        let breadcrumbs = breadcrumbElement.text().trim().split('>').filter(function(v){return v!==''});
 
-                        if(realesLocationElement.length > 0)
+                        if(provinceId > 0 && breadcrumbs.length > 3)
                         {
-                            let locationInfos = realesLocationElement.text().replace('Vị trí:', '').trim().split('-');
-
-                            if(locationInfos.length > 1)
-                            {
-                                locationInfo = locationInfos[ locationInfos.length - 1].replace(/&nbsp;/g, '').trim();
-                            }
-                        }
-
-                        let breadcrumbs = breadcrumbElement.find('li');//breadcrumbElement.text().trim().replace(/\r/g, '').split(/\n/).filter(function(v){ return v!==''; });
-
-                        if(provinceId > 0 && breadcrumbs.length > 4)
-                        {
-                            let districtName = $($(breadcrumbs)[4]).text().trim();
+                            let districtName = $($(breadcrumbs)[3]).text().trim();
 
                             if(districtName.length > 0)
                             {
-                                if(districtName.replace('Tp.', '').trim() == locationInfo)
+                                const district = 
                                 {
-                                    if(breadcrumbs.length > 5)
-                                    {
-                                        districtName = $($(breadcrumbs)[5]).text().trim();
-                                    }
-                                    else 
-                                    {
-                                        districtName = '';
-                                    }
+                                    SiteId: configs.siteId,
+                                    ProvinceId: provinceId,
+                                    Name: districtName.replace('Quận', '').replace('Huyện', '').trim()
                                 }
 
-                                if(districtName.length > 0)
-                                {
-                                    const district = 
-                                    {
-                                        SiteId: configs.siteId,
-                                        ProvinceId: provinceId,
-                                        Name: districtName.replace('Quận', '').replace('Huyện', '').trim()
-                                    }
-    
-                                    districtId = await database.districtInsert(district);
-                                }
+                                districtId = await database.districtInsert(district);
                             }
                         }
                     }
@@ -368,44 +357,6 @@ const scraperObject = {
                 }
 
                 return districtId;
-            }
-
-            const parserWards = async ($, provinceId, districtId, pageUrl, productUrl) =>
-            {
-                let wardsId = 0;
-                try 
-                {
-                    let breadcrumbElement = $('.breadcrumb').first();
-
-                    if(breadcrumbElement.length > 0)
-                    {
-                        let breadcrumbs = breadcrumbElement.find('li');//.text().trim().replace(/\r/g, '').split(/\n/).filter(function(v){return v!==''});
-
-                        if(provinceId > 0 && districtId > 0 && breadcrumbs.length > 5)
-                        {
-                            const wardsName = $($(breadcrumbs)[5]).text().trim();
-
-                            if(wardsName.length > 0)
-                            {
-                                const wards = 
-                                {
-                                    SiteId: configs.siteId,
-                                    ProvinceId: provinceId,
-                                    DistrictId: districtId,
-                                    Name: wardsName.replace('Phường', '').replace('Xã', '').replace('Thị trấn', '').replace('thị trấn', '').trim()
-                                }
-
-                                wardsId = await database.wardsInsert(wards);
-                            }
-                        }
-                    }
-                } 
-                catch (error) 
-                {
-                    await scraperObject.scraperLog('parserWards', error, pageUrl, productUrl);
-                }
-
-                return wardsId;
             }
 
             const parserCustomer = async ($, pageUrl, productUrl) =>

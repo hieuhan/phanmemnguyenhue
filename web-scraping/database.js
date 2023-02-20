@@ -338,6 +338,7 @@ const customerInsert = async (customer) =>
             .input("SiteId", sql.Int, customer.SiteId)  
             .input("FullName", sql.NVarChar(250), (customer.FullName || null))
             .input("PhoneNumber", sql.NVarChar(50), (customer.PhoneNumber || null))
+            .input("SecondPhoneNumber", sql.NVarChar(50), (customer.SecondPhoneNumber || null))
             .input("Email", sql.NVarChar(150), (customer.Email || null))
             .input("Avatar", sql.NVarChar(2000), (customer.Avatar || null))
             .output('CustomerId', sql.Int)
