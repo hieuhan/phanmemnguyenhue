@@ -341,7 +341,7 @@ const scraperObject = {
                                 {
                                     SiteId: configs.siteId,
                                     ProvinceId: provinceId,
-                                    Name: districtName.replace('Quận', '').replace('Huyện', '').trim()
+                                    Name: districtName.replace('Quận', '').replace('Huyện', '').replace('TP.', '').trim()
                                 }
 
                                 districtId = await database.districtInsert(district);
@@ -477,7 +477,7 @@ const scraperObject = {
 
                         if(productCodeElement.length > 0)
                         {
-                            const publishedAtElement = productCodeElement.find('.r-detaildv1').eq(2).first();
+                            const publishedAtElement = productCodeElement.find('.left-detaildv1').eq(2).first();
 
                             if(publishedAtElement.length > 0)
                             {
@@ -503,7 +503,7 @@ const scraperObject = {
                                 }
                             }
 
-                            const expirationAtElement = productCodeElement.find('.r-detaildv1').eq(3).first();
+                            const expirationAtElement = productCodeElement.find('.left-detaildv1').eq(3).first();
 
                             if(expirationAtElement.length > 0)
                             {
