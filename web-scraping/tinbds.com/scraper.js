@@ -64,8 +64,6 @@ const scraperObject = {
                         });
                     });
 
-                    console.log(productUrls);
-
                     let pagePromise = (productUrl) => new Promise(async(resolve, reject) =>{
                         try 
                         {
@@ -335,7 +333,7 @@ const scraperObject = {
 
                         if(provinceId > 0 && breadcrumbs.length > 3)
                         {
-                            let districtName = $($(breadcrumbs)[3]).text().trim();
+                            const districtName = breadcrumbs[3].trim();
 
                             if(districtName.length > 0)
                             {
