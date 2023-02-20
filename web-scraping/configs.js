@@ -12,5 +12,6 @@ module.exports =
     poolIdleTimeout: parseInt(process.env.POOL_IDLE_TIMEOUT),
     actionBy: process.env.ACTION_BY,
     randomMin: parseInt(process.env.RANDOM_MIN),
-    randomMax: parseInt(process.env.RANDOM_MAX)
+    randomMax: parseInt(process.env.RANDOM_MAX),
+    executablePath: process.env.EXECUTABLE_PATH
 }

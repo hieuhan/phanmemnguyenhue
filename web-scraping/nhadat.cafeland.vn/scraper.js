@@ -64,7 +64,7 @@ const scraperObject = {
                         });
                     });
 
-                    console.log(productUrls);
+                    //console.log(productUrls);
 
                     let pagePromise = (productUrl) => new Promise(async(resolve, reject) =>{
                         try 
@@ -94,14 +94,6 @@ const scraperObject = {
                             const pageHtml = await newPage.evaluate(() => document.querySelector('*').outerHTML);
 
                             const $ = cheerio.load(pageHtml);
-                            let breadcrumbElement = $('.breadcrumb').first();
-
-                            if(breadcrumbElement.length > 0)
-                            {
-                                let breadcrumbs = breadcrumbElement.text().trim().replace(/\r/g, '').split(/\n/).filter(function(v){return v!==''});
-
-                                console.log(breadcrumbs)
-                            }
 
                             await parserData($, pageUrl, productUrl);
                                 
@@ -124,24 +116,42 @@ const scraperObject = {
                         await pagePromise(productUrls[link]);
                     }
 
-                    // let currentPage = utils.urlGetParam(pageUrl, 'page');
+                    let content = await page.content();
 
-                    // if(currentPage <= 1000)
-                    // {
-                    //     let nextPageUrl = utils.urlSetParam(pageUrl, 'page', (currentPage + 1));
+                    const $ = cheerio.load(content);
 
-                    //     console.log(`Truy cập trang => ${(currentPage + 1)} => danh sách bài đăng =>\n${nextPageUrl}\n`);
+                    //link phan trang
+                    let nextButton = $('.pagination a:contains("»")').first();
 
-                    //     await page.goto(nextPageUrl, { waitUntil: 'domcontentloaded'});
+                    let nextButtonExist = false;
 
-                    //     await database.scrapeLogInsert({
-                    //         SiteId: configs.siteId,
-                    //         Path: nextPageUrl,
-                    //         Message: `Truy cập trang => ${(currentPage + 1)}`
-                    //     })
+                    if(nextButton.length > 0)
+                    {
+                        nextButtonExist = true;
+                    }
+                    
+                    if(nextButtonExist)
+                    {
+                        const nextUrl = nextButton.attr('href');
 
-                    //     return scrapeCurrentPage(nextPageUrl);
-                    // }
+                        if(nextUrl.length > 0)
+                        {
+                            const nextPage = utils.urlGetCurrentPageV2(nextUrl);
+        
+                            console.log(`Truy cập trang => ${nextPage} => danh sách bài đăng =>\n${nextUrl}\n`);
+
+                            await page.goto(nextUrl, { waitUntil: 'domcontentloaded'});
+
+                            await database.scrapeLogInsert({
+                                SiteId: configs.siteId,
+                                Path: nextUrl,
+                                Message: `Truy cập trang => ${nextPage}`
+                            })
+
+                            return scrapeCurrentPage(nextUrl);
+                        }
+                        
+                    }
 
                      //đóng page
                      await pageClose(page, pageUrl);
@@ -158,23 +168,23 @@ const scraperObject = {
                 {
                     let districtId = 0 , wardId = 0, productId = 0;
 
-                    const [actionTypeId, categoryId, provinceId, customerId] = await Promise.all([
+                    const [actionTypeId, apartmentTypeId, provinceId, customerId] = await Promise.all([
                         parserActionType($, pageUrl, productUrl),
-                        parserCategory($, pageUrl, productUrl),
+                        parserApartmentType($, pageUrl, productUrl),
                         parserProvince($, pageUrl, productUrl),
                         parserCustomer($, pageUrl, productUrl)
                     ]);
 
-                    if(provinceId > 0 || 1==1)
+                    if(provinceId > 0)
                     {
                         districtId = await parserDistrict($, provinceId, pageUrl, productUrl);
 
-                        if(districtId > 0 || 1==1)
+                        if(districtId > 0)
                         {
                             wardId = await parserWards($, provinceId, districtId, pageUrl, productUrl);
                         }
 
-                        productId = await parserProduct($, actionTypeId, categoryId, provinceId, (districtId || 0), (wardId || 0), customerId, pageUrl, productUrl);
+                        productId = await parserProduct($, actionTypeId, apartmentTypeId, provinceId, (districtId || 0), (wardId || 0), customerId, pageUrl, productUrl);
                     }
                     
                     await waitForTimeout(page);
@@ -207,8 +217,8 @@ const scraperObject = {
                                     SiteId: configs.siteId,
                                     Name: actionTypeName.replace('Mua bán nhà đất', 'Bán').replace('Cho thuê nhà đất', 'Cho thuê')
                                 }
-                                console.log(actionType);
-                                //actionTypeId = await database.actionTypeInsert(actionType);
+
+                                actionTypeId = await database.actionTypeInsert(actionType);
                             }
                         }
                     }
@@ -221,9 +231,9 @@ const scraperObject = {
                 return actionTypeId;
             }
 
-            const parserCategory = async ($, pageUrl, productUrl) =>
+            const parserApartmentType = async ($, pageUrl, productUrl) =>
             {
-                let categoryId = null;
+                let apartmentTypeId = null;
                 try 
                 {
 
@@ -235,27 +245,28 @@ const scraperObject = {
 
                         if(breadcrumbs.length > 2)
                         {
-                            const categoryName = breadcrumbs[2].trim();
+                            let apartmentTypeName = breadcrumbs[2].trim();
 
-                            if(categoryName.length > 0)
+                            if(apartmentTypeName.length > 0)
                             {
-                                const category = 
-                                {
+                                apartmentTypeName = apartmentTypeName.replace('Mua bán', '').replace('Cho thuê', '').trim();
+
+                                let apartmentType = {
                                     SiteId: configs.siteId,
-                                    Name: utils.ucFirst(categoryName.replace('Mua bán', '').replace('Cho thuê', '').trim())
+                                    Name: utils.ucFirst(apartmentTypeName)
                                 }
-                                console.log(category);
-                                //categoryId = await database.categoryInsert(category);
+        
+                                apartmentTypeId = await database.landTypeInsert(apartmentType);
                             }
                         }
                     }
                 } 
                 catch (error) 
                 {
-                    await scraperObject.scraperLog('parserCategory', error, pageUrl, productUrl);
+                    await scraperObject.scraperLog('parserApartmentType', error, pageUrl, productUrl);
                 }
 
-                return categoryId;
+                return apartmentTypeId;
             }
 
             const parserProvince = async ($, pageUrl, productUrl) =>
@@ -280,8 +291,8 @@ const scraperObject = {
                                     SiteId: configs.siteId,
                                     Name: provinceName
                                 }
-                                console.log(province);
-                                //provinceId = await database.provinceInsert(province);
+
+                                provinceId = await database.provinceInsert(province);
                             }
                         }
                     }
@@ -303,22 +314,46 @@ const scraperObject = {
 
                     if(breadcrumbElement.length > 0)
                     {
-                        let breadcrumbs = breadcrumbElement.text().trim().replace(/\r/g, '').split(/\n/).filter(function(v){return v!==''});
+                        let locationInfo = '';
+                        const realesLocationElement = $('.reales-location .col-left .infor').first();
 
-                        if((provinceId > 0 || 1==1) && breadcrumbs.length > 4)
+                        if(realesLocationElement.length > 0)
                         {
-                            const districtName = breadcrumbs[4].trim();
+                            let locationInfos = realesLocationElement.text().replace('Vị trí:', '').trim().split('-');
+
+                            if(locationInfos.length > 1)
+                            {
+                                locationInfo = locationInfos[1].trim();
+                            }
+                        }
+
+                        let breadcrumbs = breadcrumbElement.find('li');//breadcrumbElement.text().trim().replace(/\r/g, '').split(/\n/).filter(function(v){ return v!==''; });
+
+                        if(provinceId > 0 && breadcrumbs.length > 4)
+                        {
+                            let districtName = $($(breadcrumbs)[4]).text().trim();
 
                             if(districtName.length > 0)
                             {
-                                const district = 
+                                if(districtName.replace('Tp.', '').trim() == locationInfo)
                                 {
-                                    SiteId: configs.siteId,
-                                    ProvinceId: provinceId,
-                                    Name: districtName.replace('Quận', '').replace('Huyện', '').trim()
+                                    if(breadcrumbs.length > 5)
+                                    {
+                                        districtName = breadcrumbs[5].trim();
+                                    }
                                 }
-                                console.log(district);
-                                //districtId = await database.districtInsert(district);
+
+                                if(districtName.length > 0)
+                                {
+                                    const district = 
+                                    {
+                                        SiteId: configs.siteId,
+                                        ProvinceId: provinceId,
+                                        Name: districtName.replace('Quận', '').replace('Huyện', '').trim()
+                                    }
+    
+                                    districtId = await database.districtInsert(district);
+                                }
                             }
                         }
                     }
@@ -340,11 +375,11 @@ const scraperObject = {
 
                     if(breadcrumbElement.length > 0)
                     {
-                        let breadcrumbs = breadcrumbElement.text().trim().replace(/\r/g, '').split(/\n/).filter(function(v){return v!==''});
+                        let breadcrumbs = breadcrumbElement.find('li');//.text().trim().replace(/\r/g, '').split(/\n/).filter(function(v){return v!==''});
 
-                        if((provinceId > 0 && districtId > 0 || 1==1) && breadcrumbs.length > 5)
+                        if(provinceId > 0 && districtId > 0 && breadcrumbs.length > 5)
                         {
-                            const wardsName = breadcrumbs[5].trim();
+                            const wardsName = $($(breadcrumbs)[5]).text().trim();
 
                             if(wardsName.length > 0)
                             {
@@ -355,8 +390,8 @@ const scraperObject = {
                                     DistrictId: districtId,
                                     Name: wardsName.replace('Phường', '').replace('Xã', '').replace('Thị trấn', '').replace('thị trấn', '').trim()
                                 }
-                                console.log(wards);
-                                //wardsId = await database.wardsInsert(wards);
+
+                                wardsId = await database.wardsInsert(wards);
                             }
                         }
                     }
@@ -415,8 +450,8 @@ const scraperObject = {
                             Email: email,
                             Avatar: avatar
                         }
-                        console.log(customer);
-                        //customerId = await database.customerInsert(customer);
+
+                        customerId = await database.customerInsert(customer);
                     }
                 } 
                 catch (error) 
@@ -427,7 +462,7 @@ const scraperObject = {
                 return customerId;
             }
 
-            const parserProduct = async ($, actionTypeId, categoryId, provinceId, districtId, wardId, customerId, pageUrl, productUrl) =>
+            const parserProduct = async ($, actionTypeId, landTypeId, provinceId, districtId, wardId, customerId, pageUrl, productUrl) =>
             {
                 let resultVar = 0;
                 try 
@@ -438,7 +473,6 @@ const scraperObject = {
                     {
                         let title = '', breadcrumb = '', address = '', productCode = 0, 
                         publishedAt = null, expirationAt = null, verified = 0, isVideo = 0;
-
 
                         //tin đã xác thực
                         const iconVerifiedElement = productDetailWebElement.find('.reals-cafeland-xacnhan').first();
@@ -487,7 +521,7 @@ const scraperObject = {
                                 {
                                     const productCodeClean = productCodes[0].replace(/[^0-9]/gm,'').trim();
 
-                                    if(productCodeClean.length > 4)
+                                    if(productCodeClean.length > 7)
                                     {
                                         productCode = parseInt(productCodeClean.substring(4));
                                     }
@@ -527,66 +561,19 @@ const scraperObject = {
                             ProvinceId: provinceId,
                             DistrictId: districtId,
                             WardId: wardId,
-                            //StreetId: streetId,
-                            //ProjectId: projectId,
                             CustomerId: customerId,
                             Breadcrumb: breadcrumb,
                             Address: address,
                             Verified: verified,
                             IsVideo: isVideo,
-                            //ActionTypeId: actionTypeId,
-                            //LandTypeId: landTypeId,
+                            ActionTypeId: actionTypeId,
+                            LandTypeId: landTypeId,
                             PublishedAt: publishedAt,
                             ExpirationAt: expirationAt
                         }
 
-                        console.log(product);
-
-                        //resultVar = await database.productInsert(product);
+                        resultVar = await database.productInsert(product);
                     }
-                    ///
-                    // if(data.props.initialState.adView.adInfo.ad)
-                    // {
-                    //     let title = data.props.initialState.adView.adInfo.ad.subject || '';
-
-                    //     if(title.length > 0)
-                    //     {
-                    //         let productCode = data.props.initialProps.pageProps.adId,
-                    //         productUrl = data.props.initialProps.canonicalUrl,
-                    //         imagePath = data.props.initialState.adView.adInfo.ad.thumbnail_image,
-                    //         breadcrumb = null,
-                    //         address = null;
-                    //         isVideo = (data.props.initialState.adView.adInfo.ad.videos.length > 0 ? 1 : 0),
-                    //         verified = (data.props.initialState.adView.adInfo.ad.protection_entitlement ? 1 : 0),
-                    //         unixTimestamp = data.props.initialState.adView.adInfo.ad.list_time,
-                    //         publishedAt = utils.convertTZ(new Date(unixTimestamp), 'Asia/Ho_Chi_Minh'),
-                    //         expirationAt = null;
-
-                    //         let product = {
-                    //             SiteId: configs.siteId,
-                    //             CategoryId: categoryId,
-                    //             ParentCategoryId: parentCategoryId,
-                    //             Title: title,
-                    //             ProductUrl: productUrl,
-                    //             ImagePath: imagePath,
-                    //             ProductCode: productCode,
-                    //             ProvinceId: provinceId,
-                    //             DistrictId: districtId,
-                    //             WardId: wardId,
-                    //             StreetId: streetId,
-                    //             CustomerId: customerId,
-                    //             Breadcrumb: breadcrumb,
-                    //             Address: address,
-                    //             Verified: verified,
-                    //             IsVideo: isVideo,
-                    //             ActionTypeId: actionTypeId,
-                    //             PublishedAt: publishedAt,
-                    //             ExpirationAt: expirationAt
-                    //         }
-    
-                    //         resultVar = await database.productInsert(product);
-                    //     }
-                    // }
                 } 
                 catch (error) 
                 {

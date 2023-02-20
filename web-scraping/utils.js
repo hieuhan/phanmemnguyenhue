@@ -206,6 +206,21 @@ function urlGetCurrentPage(url)
     return currentPage;
 }
 
+function urlGetCurrentPageV2(url)
+{
+    let currentPage = 1;
+    try 
+    {
+        currentPage = url.substring(url.lastIndexOf('/') + 1).replace('page','').replace('-','').replace('/','');
+    } 
+    catch (error) 
+    {
+        console.error(`urlGetCurrentPageV2('${url}') error => ${error}\n`);
+    }
+
+    return currentPage;
+}
+
 function ucFirst(string){
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
@@ -221,5 +236,6 @@ module.exports = {
     urlGetParam: urlGetParam,
     urlSetParam: urlSetParam,
     urlGetCurrentPage: urlGetCurrentPage,
+    urlGetCurrentPageV2: urlGetCurrentPageV2,
     ucFirst: ucFirst
 }
