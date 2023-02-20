@@ -130,7 +130,7 @@ const scraperObject = {
                     
                     if(nextButtonExist)
                     {
-                        const nextUrl = nextButton.attr('href');
+                        const nextUrl = utils.getProductUrl(configs.websiteDomain, nextButton.attr('href'));
 
                         if(nextUrl.length > 0)
                         {
@@ -368,11 +368,11 @@ const scraperObject = {
                     {
                         let fullName = '', phoneNumber = '', secondPhoneNumber = '', email = null, avatar = null;
 
-                        const contactNameElement = contactInfoElement.find('.r-detaildv1').eq(0).first();
+                        const contactNameElement = contactInfoElement.find('.r-detaildv1 .left:contains("Tên liên lạc")').first();
 
                         if(contactNameElement.length > 0)
                         {
-                            const rightContactNameElement = contactNameElement.find('.right').first();
+                            const rightContactNameElement = contactNameElement.next();
 
                             if(rightContactNameElement.length > 0)
                             {
@@ -380,11 +380,11 @@ const scraperObject = {
                             }
                         }
 
-                        const phoneElement = contactInfoElement.find('.r-detaildv1').eq(1).first();
+                        const phoneElement = contactInfoElement.find('.r-detaildv1 .left:contains("Điện thoại")').first();
 
                         if(phoneElement.length > 0)
                         {
-                            const rightPhoneElement = phoneElement.find('.right').first();
+                            const rightPhoneElement = phoneElement.next();
 
                             if(rightPhoneElement.length > 0)
                             {
@@ -407,11 +407,11 @@ const scraperObject = {
                             }
                         }
 
-                        const emailElement = contactInfoElement.find('.r-detaildv1').eq(4).first();
+                        const emailElement = contactInfoElement.find('.r-detaildv1 .left:contains("Email")').first();
                         
                         if(emailElement.length > 0)
                         {
-                            const rightEmailElement = emailElement.find('.right').first();
+                            const rightEmailElement = emailElement.next();
 
                             if(rightEmailElement.length > 0)
                             {
@@ -477,16 +477,16 @@ const scraperObject = {
 
                         if(productCodeElement.length > 0)
                         {
-                            const publishedAtElement = productCodeElement.find('.left-detaildv1').eq(2).first();
+                            const leftPublishedAtElement = productCodeElement.find('.left-detaildv1 .left:contains("Ngày đăng tin")').first();
 
-                            if(publishedAtElement.length > 0)
+                            if(leftPublishedAtElement.length > 0)
                             {
-                                const rightPublishedAtElement = publishedAtElement.find('.right').first();
+                                const publishedAtElement = leftPublishedAtElement.next();
 
-                                if(rightPublishedAtElement.length > 0)
+                                if(publishedAtElement.length > 0)
                                 {
-                                    const publishedAtSplit = rightPublishedAtElement.text().trim().split('/');
-
+                                    const publishedAtSplit = publishedAtElement.text().trim().split('/');
+    
                                     if(publishedAtSplit.length == 3)
                                     {
                                         const [ publishedAtError, publishedAtData] = utils.dateToISOString(publishedAtSplit[0] , publishedAtSplit[1], publishedAtSplit[2]);
@@ -501,13 +501,14 @@ const scraperObject = {
                                         }
                                     }
                                 }
+    
                             }
-
-                            const expirationAtElement = productCodeElement.find('.left-detaildv1').eq(3).first();
+                            
+                            const expirationAtElement = productCodeElement.find('.left-detaildv1 .left:contains("Ngày hết hạn")').first();;
 
                             if(expirationAtElement.length > 0)
                             {
-                                const rightExpirationAtElement = expirationAtElement.find('.right').first();
+                                const rightExpirationAtElement = expirationAtElement.next();
 
                                 if(rightExpirationAtElement.length > 0)
                                 {
