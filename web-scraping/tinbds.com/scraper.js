@@ -477,44 +477,54 @@ const scraperObject = {
 
                         if(productCodeElement.length > 0)
                         {
-                            const publishedAtElement = productCodeElement.find('.r-detaildv1:nth-child(3) .right').first();
+                            const publishedAtElement = productCodeElement.find('.r-detaildv1').eq(2).first();
 
                             if(publishedAtElement.length > 0)
                             {
-                                const publishedAtSplit = publishedAtElement.text().trim().split('/');
+                                const rightPublishedAtElement = publishedAtElement.find('.right').first();
 
-                                if(publishedAtSplit.length == 3)
+                                if(rightPublishedAtElement.length > 0)
                                 {
-                                    const [ publishedAtError, publishedAtData] = utils.dateToISOString(publishedAtSplit[0] , publishedAtSplit[1], publishedAtSplit[2]);
-                        
-                                    if(publishedAtError)
+                                    const publishedAtSplit = rightPublishedAtElement.text().trim().split('/');
+
+                                    if(publishedAtSplit.length == 3)
                                     {
-                                        await scraperObject.scraperLog(`Bài đăng => ${title} => PublishedAt`, publishedAtError, pageUrl, productUrl);
-                                    }
-                                    else
-                                    {
-                                        publishedAt = publishedAtData;
+                                        const [ publishedAtError, publishedAtData] = utils.dateToISOString(publishedAtSplit[0] , publishedAtSplit[1], publishedAtSplit[2]);
+                            
+                                        if(publishedAtError)
+                                        {
+                                            await scraperObject.scraperLog(`Bài đăng => ${title} => PublishedAt`, publishedAtError, pageUrl, productUrl);
+                                        }
+                                        else
+                                        {
+                                            publishedAt = publishedAtData;
+                                        }
                                     }
                                 }
                             }
 
-                            const expirationAtElement = productCodeElement.find('.r-detaildv1:nth-child(4) .right').first();
+                            const expirationAtElement = productCodeElement.find('.r-detaildv1').eq(3).first();
 
                             if(expirationAtElement.length > 0)
                             {
-                                const expirationAtSplit = expirationAtElement.text().trim().split('/');
+                                const rightExpirationAtElement = expirationAtElement.find('.right').first();
 
-                                if(expirationAtSplit.length == 3)
+                                if(rightExpirationAtElement.length > 0)
                                 {
-                                    const [ expirationAtError, expirationAtData] = utils.dateToISOString(expirationAtSplit[0] , expirationAtSplit[1], expirationAtSplit[2]);
-                        
-                                    if(expirationAtError)
+                                    const expirationAtSplit = rightExpirationAtElement.text().trim().split('/');
+
+                                    if(expirationAtSplit.length == 3)
                                     {
-                                        await scraperObject.scraperLog(`Bài đăng => ${title} => ExpirationAt`, expirationAtError, pageUrl, productUrl);
-                                    }
-                                    else 
-                                    {
-                                        expirationAt = expirationAtData;
+                                        const [ expirationAtError, expirationAtData] = utils.dateToISOString(expirationAtSplit[0] , expirationAtSplit[1], expirationAtSplit[2]);
+                            
+                                        if(expirationAtError)
+                                        {
+                                            await scraperObject.scraperLog(`Bài đăng => ${title} => ExpirationAt`, expirationAtError, pageUrl, productUrl);
+                                        }
+                                        else 
+                                        {
+                                            expirationAt = expirationAtData;
+                                        }
                                     }
                                 }
                             }
