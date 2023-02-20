@@ -121,7 +121,7 @@ const scraperObject = {
                     const $ = cheerio.load(content);
 
                     //link phan trang
-                    let nextButton = $('.pagination a:contains("»")').first();
+                    let nextButton = $('.pagination a:contains("Tiếp")').first();
 
                     let nextButtonExist = false;
 
@@ -179,12 +179,12 @@ const scraperObject = {
                     {
                         districtId = await parserDistrict($, provinceId, pageUrl, productUrl);
 
-                        if(districtId > 0)
-                        {
-                            wardId = await parserWards($, provinceId, districtId, pageUrl, productUrl);
-                        }
+                        // if(districtId > 0)
+                        // {
+                        //     wardId = await parserWards($, provinceId, districtId, pageUrl, productUrl);
+                        // }
 
-                        productId = await parserProduct($, actionTypeId, apartmentTypeId, provinceId, (districtId || 0), (wardId || 0), customerId, pageUrl, productUrl);
+                        productId = await parserProduct($, actionTypeId, apartmentTypeId, provinceId, (districtId || 0), (wardId || null), customerId, pageUrl, productUrl);
                     }
                     
                     await waitForTimeout(page);
@@ -364,44 +364,68 @@ const scraperObject = {
                 let customerId = 0;
                 try 
                 {
-                    const contactInfoElement = $('.block-contact-infor').first();
+                    const contactInfoElement = $('.info-duan .right-detail').first();
 
                     if(contactInfoElement.length > 0)
                     {
-                        let fullName = '', phoneNumber = '', email = null, avatar = null;
+                        let fullName = '', phoneNumber = '', secondPhoneNumber = '', email = null, avatar = null;
 
-                        const contactNameElement = contactInfoElement.find('.profile-name').first();
+                        const contactNameElement = contactInfoElement.find('.r-detaildv1').eq(0).first();
 
                         if(contactNameElement.length > 0)
                         {
-                            fullName = contactNameElement.text().trim();
+                            const rightContactNameElement = contactNameElement.find('.right').first();
+
+                            if(rightContactNameElement.length > 0)
+                            {
+                                fullName = rightContactNameElement.text().trim();
+                            }
                         }
 
-                        const phoneElement = contactInfoElement.find('.detailTelProfile').first();
+                        const phoneElement = contactInfoElement.find('.r-detaildv1').eq(1).first();
 
                         if(phoneElement.length > 0)
                         {
-                            phoneNumber = (phoneElement.attr('onclick') || '').replace('showfullphone(this,\'', '').replace('\')', '').trim();
+                            const rightPhoneElement = phoneElement.find('.right').first();
+
+                            if(rightPhoneElement.length > 0)
+                            {
+                                const phonesElement = rightPhoneElement.text().trim().split('/').filter(function(v){return v!==''});
+
+                                if(phonesElement.length > 0)
+                                {
+                                    phoneNumber = phonesElement[0].replaceAll('.', '').replaceAll('-', '').replace(/\s+/g, '').trim();
+                                }
+    
+                                if(phonesElement.length > 1)
+                                {
+                                    secondPhoneNumber = phonesElement[1].replaceAll('.', '').replaceAll('-', '').replace(/\s+/g, '').trim();
+    
+                                    if(phoneNumber == secondPhoneNumber)
+                                    {
+                                        secondPhoneNumber = '';
+                                    }
+                                }
+                            }
                         }
 
-                        const emailElement = contactInfoElement.find('.profile-email a').first();
+                        const emailElement = contactInfoElement.find('.r-detaildv1').eq(4).first();
                         
                         if(emailElement.length > 0)
                         {
-                            email = emailElement.text().trim();
-                        }
+                            const rightEmailElement = emailElement.find('.right').first();
 
-                        const avatarElement = contactInfoElement.find('.profile-avatar img').first();
-                        
-                        if(avatarElement.length > 0)
-                        {
-                            avatar = (avatarElement.attr('src') || '').trim();
+                            if(rightEmailElement.length > 0)
+                            {
+                                email = rightEmailElement.text().trim();
+                            }
                         }
 
                         let customer = {
                             SiteId: configs.siteId,
                             FullName: fullName,
                             PhoneNumber: phoneNumber,
+                            SecondPhoneNumber: secondPhoneNumber,
                             Email: email,
                             Avatar: avatar
                         }
@@ -422,89 +446,79 @@ const scraperObject = {
                 let resultVar = 0;
                 try 
                 {
-                    const productDetailWebElement = $('.detail-property').first();
+                    const productDetailWebElement = $('.detail-content-article').first();
                     
                     if(productDetailWebElement.length > 0)
                     {
-                        let title = '', breadcrumb = '', address = '', productCode = 0, 
-                        publishedAt = null, expirationAt = null, verified = 0, isVideo = 0;
+                        let title = '', breadcrumb = '', address = '', productCode = null, 
+                        publishedAt = null, expirationAt = null, verified = null, isVideo = null;
 
-                        //tin đã xác thực
-                        const iconVerifiedElement = productDetailWebElement.find('.reals-cafeland-xacnhan').first();
-
-                        if(iconVerifiedElement.length > 0)
-                        {
-                            verified = 1;
-                        }
-
-                        const breadcrumbElement = $('.breadcrumb').first();
+                        const breadcrumbElement = $('#brm').first();
 
                         if(breadcrumbElement.length > 0)
                         {
-                            let breadcrumbs = breadcrumbElement.text().trim().replace(/\r/g, '').split(/\n/).filter(function(v){return v!==''});
-
-                            if(breadcrumbs.length > 0)
-                            {
-                                breadcrumb = breadcrumbs.join('/');
-                            }
+                            breadcrumb = breadcrumbElement.text().trim();
                         }
 
-                        const addressElement = productDetailWebElement.find('.reales-location .col-left .infor').first();
+                        const addressElement = productDetailWebElement.find('.diadiem-title').first();
 
                         if(addressElement.length > 0)
                         {
-                            address = addressElement.text().replace('Vị trí:', '').replace(/\n/g, ' ').trim();
+                            address = addressElement.text().replace('Khu vực:', '').replace(/\n/g, ' ').trim();
                         }
 
-                        const productTitleElement = productDetailWebElement.find('.head-title').first();
+                        const productTitleElement = productDetailWebElement.find('.title-detail-content').first();
 
                         if(productTitleElement.length > 0)
                         {
                             title = productTitleElement.text().trim();
                         }
 
-                        //mã tin - ngày đăng
-                        const productCodeElement = $('.reales-location .col-right .infor').first();
+                        //ngày đăng - ngày hết hạn
+                        const productCodeElement = $('.info-duan .left-detail').first();
 
                         if(productCodeElement.length > 0)
                         {
-                            try 
-                            {
-                                const productCodes = productCodeElement.text().split('/');
+                            const publishedAtElement = productCodeElement.find('.r-detaildv1:nth-child(3) .right').first();
 
-                                if(productCodes.length > 0)
+                            if(publishedAtElement.length > 0)
+                            {
+                                const publishedAtSplit = publishedAtElement.text().trim().split('/');
+
+                                if(publishedAtSplit.length == 3)
                                 {
-                                    const productCodeClean = productCodes[0].replace(/[^0-9]/gm,'').trim();
-
-                                    if(productCodeClean.length > 7)
+                                    const [ publishedAtError, publishedAtData] = utils.dateToISOString(publishedAtSplit[0] , publishedAtSplit[1], publishedAtSplit[2]);
+                        
+                                    if(publishedAtError)
                                     {
-                                        productCode = parseInt(productCodeClean.substring(4));
+                                        await scraperObject.scraperLog(`Bài đăng => ${title} => PublishedAt`, publishedAtError, pageUrl, productUrl);
                                     }
-
-                                    if(productCodes.length > 1)
+                                    else
                                     {
-                                        const publishedAtSplit = productCodes[1].replace('Cập nhật:', '').trim().split('-');
-
-                                        if(publishedAtSplit.length == 3)
-                                        {
-                                            const [ publishedAtError, publishedAtData] = utils.dateToISOString(publishedAtSplit[0] , publishedAtSplit[1], publishedAtSplit[2]);
-                                    
-                                            if(publishedAtError)
-                                            {
-                                                await scraperObject.scraperLog(`Bài đăng => ${title} => PublishedAt`, publishedAtError, pageUrl, productUrl);
-                                            }
-                                            else
-                                            {
-                                                publishedAt = publishedAtData;
-                                            }
-                                        }
+                                        publishedAt = publishedAtData;
                                     }
-                                    
                                 }
-                            } 
-                            catch (error) 
+                            }
+
+                            const expirationAtElement = productCodeElement.find('.r-detaildv1:nth-child(4) .right').first();
+
+                            if(expirationAtElement.length > 0)
                             {
-                                await scraperObject.scraperLog(`Bài đăng ${title} => ProductCode`, error, pageUrl, productUrl);
+                                const expirationAtSplit = expirationAtElement.text().trim().split('/');
+
+                                if(expirationAtSplit.length == 3)
+                                {
+                                    const [ expirationAtError, expirationAtData] = utils.dateToISOString(expirationAtSplit[0] , expirationAtSplit[1], expirationAtSplit[2]);
+                        
+                                    if(expirationAtError)
+                                    {
+                                        await scraperObject.scraperLog(`Bài đăng => ${title} => ExpirationAt`, expirationAtError, pageUrl, productUrl);
+                                    }
+                                    else 
+                                    {
+                                        expirationAt = expirationAtData;
+                                    }
+                                }
                             }
                         }
 
