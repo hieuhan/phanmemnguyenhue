@@ -282,7 +282,7 @@ const scraperObject = {
 
                         if(breadcrumbs.length > 0)
                         {
-                            const provinceName = breadcrumbs[breadcrumbs.length -1].trim();
+                            const provinceName = breadcrumbs[breadcrumbs.length -1].replace(/&nbsp;/g, '').trim();
 
                             if(provinceName.length > 0)
                             {
@@ -323,7 +323,7 @@ const scraperObject = {
 
                             if(locationInfos.length > 1)
                             {
-                                locationInfo = locationInfos[1].trim();
+                                locationInfo = locationInfos[ locationInfos.length - 1].replace(/&nbsp;/g, '').trim();
                             }
                         }
 
@@ -339,7 +339,7 @@ const scraperObject = {
                                 {
                                     if(breadcrumbs.length > 5)
                                     {
-                                        districtName = breadcrumbs[5].trim();
+                                        districtName = $($(breadcrumbs)[5]).text().trim();
                                     }
                                 }
 
