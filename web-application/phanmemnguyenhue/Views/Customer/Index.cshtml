@@ -150,7 +150,14 @@
                                             </td>
                                             @if (Model.DataDisplayId == 1)
                                             {
-                                                <td><a href="tel:@Model.CustomersList[index].PhoneNumber" title="@Model.CustomersList[index].PhoneNumber">@Model.CustomersList[index].PhoneNumber</a></td>
+                                                <td>
+                                                    <a href="tel:@Model.CustomersList[index].PhoneNumber" title="@Model.CustomersList[index].PhoneNumber">@Model.CustomersList[index].PhoneNumber</a>
+                                                    @if (!string.IsNullOrWhiteSpace(Model.CustomersList[index].SecondPhoneNumber))
+                                                    {
+                                                        <a href="tel:@Model.CustomersList[index].SecondPhoneNumber" title="@Model.CustomersList[index].SecondPhoneNumber"> / @Model.CustomersList[index].SecondPhoneNumber</a>
+                                                    }
+                                                </td>
+
                                             }
                                             else if (Model.DataDisplayId == 2)
                                             {
@@ -158,7 +165,13 @@
                                             }
                                             else
                                             {
-                                                <td><a href="tel:@Model.CustomersList[index].PhoneNumber" title="@Model.CustomersList[index].PhoneNumber">@Model.CustomersList[index].PhoneNumber</a></td>
+                                                <td>
+                                                    <a href="tel:@Model.CustomersList[index].PhoneNumber" title="@Model.CustomersList[index].PhoneNumber">@Model.CustomersList[index].PhoneNumber</a>
+                                                    @if (!string.IsNullOrWhiteSpace(Model.CustomersList[index].SecondPhoneNumber))
+                                                    {
+                                                        <a href="tel:@Model.CustomersList[index].SecondPhoneNumber" title="@Model.CustomersList[index].SecondPhoneNumber"> / @Model.CustomersList[index].SecondPhoneNumber</a>
+                                                    }
+                                                </td>
                                                 <td><a href="mailto:@Model.CustomersList[index].Email" target="_blank" title="@Model.CustomersList[index].Email">@Model.CustomersList[index].Email</a></td>
                                             }
                                             <td><b>@Model.CustomersList[index].TotalProducts.ToString("#,###")</b></td>

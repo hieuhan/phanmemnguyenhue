@@ -112,6 +112,10 @@
                                                             <b>@(!string.IsNullOrWhiteSpace(customers.FullName) ? customers.FullName : "" ) - </b>
                                                         }
                                                         <b><a href="tel:@customers.PhoneNumber" target="_blank" title="@customers.PhoneNumber">@customers.PhoneNumber</a></b>
+                                                        @if (!string.IsNullOrWhiteSpace(customers.SecondPhoneNumber))
+                                                        {
+                                                            <b> / <a href="tel:@customers.SecondPhoneNumber" target="_blank" title="@customers.SecondPhoneNumber">@customers.SecondPhoneNumber</a></b>
+                                                        }
                                                         @if (!string.IsNullOrWhiteSpace(customers.Email))
                                                         {
                                                             <b> - <a href="mailto:@customers.Email" target="_blank" title="@customers.Email">@customers.Email</a></b>
