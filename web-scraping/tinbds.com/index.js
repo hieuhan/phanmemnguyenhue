@@ -1,5 +1,5 @@
 const browserObject = require('../browser');
-const scraperObject = require('./scraper');
+const scraperObject = require('./scraper-db');
 
 (async () => {
     

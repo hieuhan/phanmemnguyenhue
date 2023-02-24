@@ -418,6 +418,33 @@ const productInsert = async (product) =>
     return resultVar;
 }
 
+const crawlDatasInsert = async (crawlData) =>
+{
+    let resultVar = 0;
+    try 
+    {
+        console.log(`Xử lý dữ liệu crawl data - ${crawlData.ProductUrl}\n`);
+        const pool = await poolPromise;
+        
+        await pool.request()  
+            .input("ActBy", sql.NVarChar(150), configs.actionBy)  
+            .input("SiteId", sql.Int, crawlData.SiteId)  
+            .input("ProductUrl", sql.NVarChar(255), crawlData.ProductUrl)  
+            .input("Data", sql.NVarChar(sql.MAX), (crawlData.Data || null))
+            .output('CrawlDataId', sql.BigInt)
+            .execute('CrawlDatas_Insert').then(function(recordsets) {
+                const output = (recordsets.output || {});
+                resultVar = output['CrawlDataId'];
+            });
+    } 
+    catch (error) 
+    {
+        console.error(`crawlDatasInsert error => ${error}\n`);
+    }
+
+    return resultVar;
+}
+
 const scrapeLogInsert = async (scrapeLog) =>
 {
     let resultVar = 0;
@@ -459,5 +486,6 @@ module.exports = {
     streetInsert: streetInsert,
     customerInsert: customerInsert,
     productInsert: productInsert,
+    crawlDatasInsert: crawlDatasInsert,
     scrapeLogInsert: scrapeLogInsert
 }
