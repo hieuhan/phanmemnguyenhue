@@ -98,6 +98,7 @@ const scraperObject = {
                             const $ = cheerio.load(pageHtml);
 
                             const breadcrumb = $('.breadcrumb-blk').first();
+                            
                             const contentBody = $('.contentBody').first();
 
                             if(breadcrumb.length > 0 && contentBody.length > 0)
@@ -109,15 +110,13 @@ const scraperObject = {
                                 });
                             }
 
-                            
-
                             //await parserData($, pageUrl, productUrl);
                                 
                             await waitForTimeout(newPage);
 
-                            resolve(true);
-
                             await pageClose(newPage, productUrl);
+
+                            resolve(true);
                         } 
                         catch (error) 
                         {

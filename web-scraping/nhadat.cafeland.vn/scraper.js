@@ -22,11 +22,19 @@ const scraperObject = {
             }
 
             // Open a new page
-            const page = await browser.newPage();
+            const page = await browser.newPage().catch(error => 
+                {
+                    console.error(error);
+
+                } );
 
             page.setUserAgent(userAgent.random().toString());
 
-            await page.setRequestInterception(true);
+            await page.setRequestInterception(true).catch(error => 
+                {
+                    console.error(error);
+                    
+                } );
 
             page.on('request', (request) => {
 
@@ -46,9 +54,13 @@ const scraperObject = {
                 Message: `Truy cập danh sách bài đăng => ${pageUrl}`
             });
 
-            await page.setDefaultNavigationTimeout(0);
+            //await page.setDefaultNavigationTimeout(0);
             
-            await page.goto(pageUrl , {timeout: 60000, waitUntil: 'domcontentloaded'});
+            await page.goto(pageUrl , {timeout: 60000, waitUntil: 'domcontentloaded'}).catch(error => 
+                {
+                    console.error(error);
+                    
+                } );
 
             const scrapeCurrentPage = async (pageUrl) =>
             {
@@ -62,18 +74,30 @@ const scraperObject = {
                         {
                             return el.querySelector('a').href;
                         });
-                    });
+                    }).catch(error => 
+                        {
+                            console.error(error);
+                            
+                        } );
 
                     //console.log(productUrls);
 
                     let pagePromise = (productUrl) => new Promise(async(resolve, reject) =>{
                         try 
                         {
-                            let newPage = await browser.newPage();
+                            let newPage = await browser.newPage().catch(error => 
+                                {
+                                    console.error(error);
+                                    
+                                } );
 
                             newPage.setUserAgent(userAgent.random().toString());
 
-                            await newPage.setRequestInterception(true);
+                            await newPage.setRequestInterception(true).catch(error => 
+                                {
+                                    console.error(error);
+                                    
+                                } );
 
                             newPage.on('request', (request) => {
 
@@ -87,11 +111,19 @@ const scraperObject = {
 
                             console.log(`Truy cập bài đăng =>\n${productUrl}\n`);
 
-                            await newPage.setDefaultNavigationTimeout(0);
+                            //await newPage.setDefaultNavigationTimeout(0);
             
-                            await newPage.goto(productUrl , {timeout: 60000, waitUntil: 'domcontentloaded'});
+                            await newPage.goto(productUrl , {timeout: 60000, waitUntil: 'domcontentloaded'}).catch(error => 
+                                {
+                                    console.error(error);
+                                    
+                                } );
 
-                            const pageHtml = await newPage.evaluate(() => document.querySelector('*').outerHTML);
+                            const pageHtml = await newPage.evaluate(() => document.querySelector('*').outerHTML).catch(error => 
+                                {
+                                    console.error(error);
+                                    
+                                } );
 
                             const $ = cheerio.load(pageHtml);
 
@@ -113,10 +145,18 @@ const scraperObject = {
 
                     for(link in productUrls)
                     {
-                        await pagePromise(productUrls[link]);
+                        await pagePromise(productUrls[link]).catch(error => 
+                            {
+                                console.error(error);
+                                
+                            } );
                     }
 
-                    let content = await page.content();
+                    let content = await page.content().catch(error => 
+                        {
+                            console.error(error);
+                            
+                        } );
 
                     const $ = cheerio.load(content);
 
@@ -140,7 +180,11 @@ const scraperObject = {
         
                             console.log(`Truy cập trang => ${nextPage} => danh sách bài đăng =>\n${nextUrl}\n`);
 
-                            await page.goto(nextUrl, { waitUntil: 'domcontentloaded'});
+                            await page.goto(nextUrl, { waitUntil: 'domcontentloaded'}).catch(error => 
+                                {
+                                    console.error(error);
+                                    
+                                } );
 
                             await database.scrapeLogInsert({
                                 SiteId: configs.siteId,
@@ -609,7 +653,11 @@ const scraperObject = {
                 {
                     console.log(`Đợi xử lý sau => ${randomNumber/1000} giây...\n`);
 
-                    await page.waitForTimeout(randomNumber);
+                    await page.waitForTimeout(randomNumber).catch(error => 
+                        {
+                            console.error(error);
+                            
+                        } );
                 } 
                 catch (error) 
                 {
